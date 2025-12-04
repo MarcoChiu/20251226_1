@@ -221,3 +221,42 @@ error: failed to push some refs to 'https://github.com/MarcoChiu/20251226_1.git'
 git branch -M main
 git push -u origin main --force
 ```
+
+
+```bash
+  1.JS
+  a.是屬於同步語言
+  b.有錯不會網下執行
+  c.AsyncFunction搭配Promise、funciton前加async，內部await等待Promise
+  d.立即函式
+  (()=>{    
+  })();
+
+  2.Reack Hook (本次六角教學)
+  3.Rack Class componet
+  4.react 18是umd最後一個版本
+
+  5.JSX語法:
+  a.關注點分離
+  b.箭頭函式也可以用
+  c.元件通常都是用大寫開頭做命名(App)，用函式來宣告 
+  d.所有標籤都需要結尾 &lt;input /&gt; &lt;img /&gt;
+  e.JS屬性為小駝峰 colSpan className
+  f.checkbox defaultChecked
+  g.label htmlFor 
+  h.input text defaultValue  
+  i.select defaultValue
+  j.textarea defaultValue
+  k.style={{key:value}} 物件方式
+  l.註解 {/*  */}
+  m.最外層必須要一個元素包著&lt;div&gt;&lt;/div&gt; 或React.Fragment &lt;&gt; &lt;/&gt;
+
+  6.表達式:
+  a.有可能是單一個值，或是一句話，有回傳值就是表達式
+  b.所有函式執行都是表達式
+  c.const a = 1 ; 陳述式
+  d.0===0 表達式
+  e.a = 1 ; 表達式
+  f.渲染{}只能塞入表達式 {a = 1 } O , 塞個{const a = 1} X ;
+  g.三元運算表達式可以在{}用
+```
