@@ -6,18 +6,18 @@ import EsModuleAiPage from './pages/react/05.jsx';
 import ComponentAiPage from './pages/react/06.jsx';
 import ReactMemoAiPage from './pages/react/07.jsx';
 
-import InputPage from './pages/form/01.jsx';
-import SelectPage from './pages/form/02.jsx';
-import CheckboxPage from './pages/form/03.jsx';
-import RadioPage from './pages/form/04.jsx';
-import FilePage from './pages/form/05.jsx';
-import TextareaPage from './pages/form/06.jsx';
-import KeyboardEventPage from './pages/form/07.jsx';
-import DynamicFormPage from './pages/form/08.jsx';
-import ValidationPage from './pages/form/09.jsx';
-import UncontrolledPage from './pages/form/10.jsx';
-import WizardFormPage from './pages/form/11.jsx';
-import DebouncePage from './pages/form/12.jsx';
+import InputPage from './pages/reactform/01.jsx';
+import SelectPage from './pages/reactform/02.jsx';
+import CheckboxPage from './pages/reactform/03.jsx';
+import RadioPage from './pages/reactform/04.jsx';
+import FilePage from './pages/reactform/05.jsx';
+import TextareaPage from './pages/reactform/06.jsx';
+import KeyboardEventPage from './pages/reactform/07.jsx';
+import DynamicFormPage from './pages/reactform/08.jsx';
+import ValidationPage from './pages/reactform/09.jsx';
+import UncontrolledPage from './pages/reactform/10.jsx';
+import WizardFormPage from './pages/reactform/11.jsx';
+import DebouncePage from './pages/reactform/12.jsx';
 
 import UseStateAiPage from './pages/reacthook/01.jsx';
 import UseEffectAiPage from './pages/reacthook/02.jsx';
@@ -67,8 +67,8 @@ export const routes = [
         ]
     },
     {
-        path: 'form',
-        title: 'Form',
+        path: 'reactform',
+        title: 'React Form',
         showInMenu: true,
         children: [
             { path: '01', element: <InputPage />, title: '01.Input', showInMenu: true },
