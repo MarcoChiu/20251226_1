@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { routes } from '../routes';
 
@@ -13,23 +13,31 @@ const Layout = () => {
         setIsOpen(!isOpen);
     };
 
-    const toggleMenu = (path) => {
+    const toggleMenu = (key) => {
         setExpandedMenus(prev => ({
             ...prev,
-            [path]: !prev[path]
+            [key]: !prev[key]
         }));
     };
+
+    const uniqueRoutes = useMemo(() => {
+        return routes.filter((route, index, self) =>
+            index === self.findIndex((t) => (
+                t.title === route.title
+            ))
+        );
+    }, []);
 
     // Initialize all menus as expanded on first load
     useEffect(() => {
         const initialExpanded = {};
-        routes.forEach(route => {
+        uniqueRoutes.forEach(route => {
             if (route.children) {
-                initialExpanded[route.path] = true;
+                initialExpanded[route.title] = true;
             }
         });
         setExpandedMenus(initialExpanded);
-    }, []);
+    }, [uniqueRoutes]);
 
     // Helper to flatten routes for easier title lookup
     const getFlattenedRoutes = (routes, parentPath = '') => {
@@ -65,14 +73,15 @@ const Layout = () => {
     const renderMenu = (routes, parentPath = '') => {
         return routes.filter(r => r.showInMenu).map(route => {
             const fullPath = parentPath ? `${parentPath}/${route.path}` : route.path;
-            const isExpanded = expandedMenus[route.path];
+            const menuKey = route.title;
+            const isExpanded = expandedMenus[menuKey];
 
             if (route.children) {
                 return (
-                    <li className="nav-item mb-2" key={route.path}>
+                    <li className="nav-item mb-2" key={menuKey}>
                         <div
                             className="nav-link text-white fw-bold d-flex align-items-center justify-content-between"
-                            onClick={() => toggleMenu(route.path)}
+                            onClick={() => toggleMenu(menuKey)}
                             style={{ cursor: 'pointer', userSelect: 'none' }}
                         >
                             <span>{route.title}</span>
@@ -94,7 +103,7 @@ const Layout = () => {
             }
 
             return (
-                <li className="nav-item mb-2" key={route.path}>
+                <li className="nav-item mb-2" key={route.title}>
                     <Link
                         to={`/${fullPath}`}
                         className="nav-link text-white"
@@ -123,10 +132,10 @@ const Layout = () => {
                     overflow: 'hidden'
                 }}
             >
-                <div className="p-1">
+                <div className="p-1" style={{ width: '300px', height: '100vh', overflowY: 'auto', overflowX: 'hidden' }}>
                     <h4 className="mb-2">學習筆記本</h4>
                     <ul className="nav flex-column">
-                        {renderMenu(routes)}
+                        {renderMenu(uniqueRoutes)}
                     </ul>
                 </div>
             </div>

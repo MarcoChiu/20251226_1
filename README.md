@@ -159,6 +159,11 @@ npm i bootstrap
 
 ``` 
 
+### React Hook Form
+```bash
+npm i react-hook-form
+``` 
+
 ### 環境變數
 ```bash
 #開發環境
@@ -222,9 +227,9 @@ git branch -M main
 git push -u origin main --force
 ```
 
-
+## React 概念
 ```bash
-  1.JS
+1.JS
   a.是屬於同步語言
   b.有錯不會網下執行
   c.AsyncFunction搭配Promise、funciton前加async，內部await等待Promise
@@ -232,11 +237,11 @@ git push -u origin main --force
   (()=>{    
   })();
 
-  2.Reack Hook (本次六角教學)
-  3.Rack Class componet
-  4.react 18是umd最後一個版本
+2.Reack Hook (本次六角教學)
+3.Rack Class componet
+4.react 18是umd最後一個版本
 
-  5.JSX語法:
+5.JSX語法:
   a.關注點分離
   b.箭頭函式也可以用
   c.元件通常都是用大寫開頭做命名(App)，用函式來宣告 
@@ -251,7 +256,7 @@ git push -u origin main --force
   l.註解 {/*  */}
   m.最外層必須要一個元素包著&lt;div&gt;&lt;/div&gt; 或React.Fragment &lt;&gt; &lt;/&gt;
 
-  6.表達式:
+6.表達式:
   a.有可能是單一個值，或是一句話，有回傳值就是表達式
   b.所有函式執行都是表達式
   c.const a = 1 ; 陳述式
@@ -259,4 +264,19 @@ git push -u origin main --force
   e.a = 1 ; 表達式
   f.渲染{}只能塞入表達式 {a = 1 } O , 塞個{const a = 1} X ;
   g.三元運算表達式可以在{}用
+
+7.元件包法
+  a.元件不要把col-包進去比較好
+  b.先排出版面功能沒問題，再一個一個切成元件
+  c.React傳props由外到內
+  d.?可選串連，可防止欄位出錯
+
+8.生命週期
+  a.function元件
+  b.建立virtual DOM
+  c.useLayoutEffect
+  d.渲染
+  e.useEffect
+  f.卸載
+
 ```
