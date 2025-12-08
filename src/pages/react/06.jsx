@@ -429,6 +429,248 @@ export default function ComponentPage() {
                     </div>
                 </div>
             </div></div></div></div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-slash me-2 text-primary"></i>
+                                程式碼範例
+                            </h3>
+                            
+                            <div className="mb-4">
+                                <h5 className="mb-3">1. Axios 基本請求</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`import axios from 'axios';
+
+// GET 請求
+const fetchData = async () => {
+  try {
+    const response = await axios.get('/api/products');
+    console.log(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// POST 請求
+const createProduct = async (data) => {
+  const response = await axios.post('/api/products', {
+    name: 'Product Name',
+    price: 100
+  });
+  return response.data;
+};
+
+// PUT/PATCH 更新
+const updateProduct = async (id, data) => {
+  await axios.put(\`/api/products/\${id}\`, data);
+};
+
+// DELETE 刪除
+const deleteProduct = async (id) => {
+  await axios.delete(\`/api/products/\${id}\`);
+};`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">2. 認證與 Token 管理</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// 登入取得 Token
+const login = async (email, password) => {
+  const response = await axios.post('/admin/signin', {
+    username: email,
+    password: password
+  });
+  
+  const { token, expired } = response.data;
+  
+  // 儲存到 Cookie
+  document.cookie = \`authToken=\${token};expires=\${new Date(expired)}\`;
+  
+  return token;
+};
+
+// 設定請求 Header
+const token = getCookieToken();
+axios.defaults.headers.common['Authorization'] = token;
+
+// 或使用 config 參數
+const config = {
+  headers: { Authorization: token }
+};
+await axios.get('/api/products', config);`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">3. 檔案上傳</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const uploadFile = async (file) => {
+  const formData = new FormData();
+  formData.append('file-to-upload', file);
+
+  const response = await axios.post('/api/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': token
+    }
+  });
+
+  return response.data.imageUrl;
+};
+
+// React 中使用
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  uploadFile(file)
+    .then(url => console.log('上傳成功:', url))
+    .catch(err => console.error('上傳失敗:', err));
+};`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">4. useRef 管理 Token</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`import { useRef } from 'react';
+
+function App() {
+  const tokenRef = useRef('');
+
+  // 登入後儲存
+  const login = async () => {
+    const response = await axios.post('/signin', {...});
+    tokenRef.current = response.data.token;
+  };
+
+  // 使用 token
+  const fetchData = async () => {
+    const config = {
+      headers: { Authorization: tokenRef.current }
+    };
+    const data = await axios.get('/api/data', config);
+  };
+
+  // ✅ 優點：不會觸發重新渲染
+  // ✅ 值在整個生命週期保持
+}`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">5. 元件拆分模式</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// ProductCard.jsx - 子元件
+const ProductCard = ({ product, onDelete }) => {
+  return (
+    <div className="card">
+      <img src={product.imageUrl} alt={product.title} />
+      <div className="card-body">
+        <h5>{product.title}</h5>
+        <p>\${product.price}</p>
+        <button onClick={() => onDelete(product.id)}>
+          刪除
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// App.jsx - 父元件
+function App() {
+  const [products, setProducts] = useState([]);
+
+  const handleDelete = async (id) => {
+    await axios.delete(\`/api/products/\${id}\`);
+    setProducts(prev => prev.filter(p => p.id !== id));
+  };
+
+  return (
+    <div>
+      {products.map(product => (
+        <ProductCard 
+          key={product.id}
+          product={product}
+          onDelete={handleDelete}
+        />
+      ))}
+    </div>
+  );
+}`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>錯誤處理:</strong> 使用 try-catch 捕獲所有 API 錯誤
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>Loading 狀態:</strong> 請求期間顯示載入指示器
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>環境變數:</strong> API 金鑰存放在 .env 檔案
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 全域設定 axios.defaults 可能影響其他請求
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>元件拆分:</strong> 將 UI 拆分為可重用的小元件
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 在 render 中執行 API 請求，應使用 useEffect
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </>
     );

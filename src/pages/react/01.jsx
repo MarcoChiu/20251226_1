@@ -64,6 +64,161 @@ export default function BasicPage() {
                 <ul className="peoplelist"></ul>
             </div>
             </div></div></div></div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-slash me-2 text-primary"></i>
+                                程式碼範例
+                            </h3>
+                            
+                            <div className="mb-4">
+                                <h5 className="mb-3">1. 陣列解構</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const colors = ['red', 'green', 'blue'];
+const [first, second] = colors;
+console.log(first);  // 'red'
+console.log(second); // 'green'
+
+// React Hook 的應用
+const [count, setCount] = useState(0);`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">2. 物件解構</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const user = {
+  name: 'Tom',
+  age: 25,
+  city: 'Taipei'
+};
+
+// 順序無關，欄位名稱對應即可
+const { age, name, city } = user;
+console.log(name); // 'Tom'
+console.log(age);  // 25`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">3. 擴展運算子 (Spread Operator)</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+
+// 合併陣列
+const combined = [...arr1, ...arr2];
+// [1, 2, 3, 4, 5, 6]
+
+// 複製物件
+const original = { name: 'John', age: 30 };
+const copy = { ...original, city: 'Tokyo' };
+// { name: 'John', age: 30, city: 'Tokyo' }`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">4. map 陣列轉換</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(num => num * 2);
+// [2, 4, 6, 8, 10]
+
+// React 列表渲染
+const items = ['Apple', 'Banana', 'Orange'];
+const listItems = items.map((item, index) => (
+  <li key={index}>{item}</li>
+));`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">5. filter 陣列過濾</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const numbers = [1, 2, 3, 4, 5, 6];
+const evens = numbers.filter(num => num % 2 === 0);
+// [2, 4, 6]
+
+const users = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 17 },
+  { name: 'Charlie', age: 30 }
+];
+const adults = users.filter(user => user.age >= 18);`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>使用解構:</strong> 讓程式碼更簡潔易讀
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>map 轉換:</strong> 用於資料轉換和 React 列表渲染
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>不可變更新:</strong> 使用 Spread Operator 複製後修改
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 直接修改原始陣列或物件 (mutation)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>箭頭函式:</strong> 簡潔語法，自動綁定 this
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> map 中使用 index 作為 key (若順序會改變)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

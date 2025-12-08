@@ -299,6 +299,259 @@ export default function ReactMemoPage() {
                     </div>
                 </div>
             </div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-slash me-2 text-primary"></i>
+                                程式碼範例
+                            </h3>
+                            
+                            <div className="mb-4">
+                                <h5 className="mb-3">1. React.memo 基本用法</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`import { memo } from 'react';
+
+// 一般元件（每次父元件渲染都會重新渲染）
+const NormalChild = ({ name }) => {
+  console.log('NormalChild rendered');
+  return <div>{name}</div>;
+};
+
+// 使用 memo 優化（props 不變時不會重新渲染）
+const MemoizedChild = memo(({ name }) => {
+  console.log('MemoizedChild rendered');
+  return <div>{name}</div>;
+});
+
+// 使用
+function Parent() {
+  const [count, setCount] = useState(0);
+  const name = 'Tom';
+
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>計數 +1</button>
+      <NormalChild name={name} /> {/* 每次都重渲染 */}
+      <MemoizedChild name={name} /> {/* props 沒變不會重渲染 */}
+    </div>
+  );
+}`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">2. 自訂比較函式</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const User = memo(
+  ({ user }) => {
+    return <div>{user.name} - {user.age}</div>;
+  },
+  // 自訂比較函式（返回 true 表示不重新渲染）
+  (prevProps, nextProps) => {
+    // 只比較 user.id，其他欄位改變也不重渲染
+    return prevProps.user.id === nextProps.user.id;
+  }
+);
+
+// 預設行為：淺層比較所有 props
+const DefaultMemo = memo(({ data }) => {
+  return <div>{data.value}</div>;
+});
+
+// 相當於
+(prevProps, nextProps) => {
+  return Object.is(prevProps.data, nextProps.data);
+}`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">3. 搭配 useCallback</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`import { memo, useCallback, useState } from 'react';
+
+const Button = memo(({ onClick, label }) => {
+  console.log(\`Button "\${label}" rendered\`);
+  return <button onClick={onClick}>{label}</button>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState('');
+
+  // ❌ 每次渲染都創建新函式，memo 失效
+  const handleClick1 = () => {
+    console.log('Clicked');
+  };
+
+  // ✅ 使用 useCallback 保持函式引用
+  const handleClick2 = useCallback(() => {
+    console.log('Clicked');
+  }, []);
+
+  return (
+    <div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <Button onClick={handleClick1} label="普通" /> {/* 每次都重渲染 */}
+      <Button onClick={handleClick2} label="優化" /> {/* 只渲染一次 */}
+    </div>
+  );
+}`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">4. 物件 Props 的陷阱</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const Card = memo(({ style, data }) => {
+  return <div style={style}>{data.name}</div>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+
+  // ❌ 每次渲染都創建新物件，memo 失效
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+      <Card 
+        style={{ color: 'red' }} // 新物件！
+        data={{ name: 'Tom' }}   // 新物件！
+      />
+    </div>
+  );
+}
+
+// ✅ 解決方案 1：提升常數到元件外
+const cardStyle = { color: 'red' };
+const cardData = { name: 'Tom' };
+
+function Parent() {
+  return <Card style={cardStyle} data={cardData} />;
+}
+
+// ✅ 解決方案 2：使用 useMemo
+function Parent() {
+  const style = useMemo(() => ({ color: 'red' }), []);
+  const data = useMemo(() => ({ name: 'Tom' }), []);
+  
+  return <Card style={style} data={data} />;
+}`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">5. 效能優化實例</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// 大型列表項目
+const ListItem = memo(({ item, onDelete }) => {
+  return (
+    <div>
+      <h3>{item.title}</h3>
+      <p>{item.description}</p>
+      <button onClick={() => onDelete(item.id)}>刪除</button>
+    </div>
+  );
+});
+
+function List() {
+  const [items, setItems] = useState([...]);
+  const [filter, setFilter] = useState('');
+
+  // 使用 useCallback 避免每次創建新函式
+  const handleDelete = useCallback((id) => {
+    setItems(prev => prev.filter(item => item.id !== id));
+  }, []);
+
+  return (
+    <div>
+      <input value={filter} onChange={e => setFilter(e.target.value)} />
+      {items.map(item => (
+        <ListItem 
+          key={item.id}
+          item={item}
+          onDelete={handleDelete} // 穩定的函式引用
+        />
+      ))}
+    </div>
+  );
+}
+
+// 當 filter 改變時，ListItem 不會重渲染（因為 props 沒變）`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>適用場景:</strong> 昂貴的渲染、大型列表、第三方元件
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>搭配使用:</strong> 與 useCallback、useMemo 一起使用
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>提升常數:</strong> 將不變的物件/陣列提升到元件外
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 不要預設所有元件都用 memo（有成本）
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>Profile:</strong> 使用 React DevTools Profiler 測量效能
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 傳遞新創建的物件/陣列作為 props
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

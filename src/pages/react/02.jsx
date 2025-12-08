@@ -61,6 +61,185 @@ export default function JsxPage() {
                 </ul>
             </div>
             </div></div></div></div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-slash me-2 text-primary"></i>
+                                程式碼範例
+                            </h3>
+                            
+                            <div className="mb-4">
+                                <h5 className="mb-3">1. JSX 基本語法</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// JSX 允許在 JavaScript 中寫 HTML
+const element = <h1>Hello, World!</h1>;
+
+// 使用 {} 嵌入 JavaScript 表達式
+const name = 'Tom';
+const greeting = <h1>Hello, {name}!</h1>;
+
+// className 而非 class
+const styled = <div className="container">Content</div>;
+
+// htmlFor 而非 for
+const label = <label htmlFor="email">Email</label>;`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">2. 行內樣式物件</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// 樣式必須是物件，屬性名稱使用 camelCase
+const divStyle = {
+  color: 'blue',
+  backgroundColor: 'lightgray',
+  fontSize: '20px'
+};
+
+const StyledDiv = () => (
+  <div style={divStyle}>樣式文字</div>
+);
+
+// 或直接寫在 JSX 中
+<div style={{ color: 'red', fontSize: '20px' }}>
+  直接樣式
+</div>`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">3. 條件渲染</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// 使用三元運算子
+const isLoggedIn = true;
+<div>
+  {isLoggedIn ? <p>歡迎回來</p> : <p>請登入</p>}
+</div>
+
+// 使用 && 短路運算
+{error && <div className="alert">錯誤: {error}</div>}
+
+// 使用變數
+let content;
+if (isLoading) {
+  content = <Spinner />;
+} else {
+  content = <Content />;
+}
+return <div>{content}</div>;`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">4. 事件處理</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// 使用 camelCase (onClick 而非 onclick)
+<button onClick={handleClick}>點擊</button>
+
+// 傳遞參數
+<button onClick={() => handleClick(id)}>刪除</button>
+
+// 阻止預設行為
+const handleSubmit = (e) => {
+  e.preventDefault();
+  console.log('表單提交');
+};
+<form onSubmit={handleSubmit}>...</form>
+
+// 取得事件物件
+const handleChange = (e) => {
+  console.log(e.target.value);
+};
+<input onChange={handleChange} />`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">5. dangerouslySetInnerHTML</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// ⚠️ 謹慎使用，可能有 XSS 風險
+const htmlContent = {
+  __html: '<h3 style="color:red;">HTML 內容</h3>'
+};
+
+<div dangerouslySetInnerHTML={htmlContent} />
+
+// 只在信任的內容時使用
+// 使用者輸入的內容應該進行清理`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>使用 className:</strong> 而非 class 屬性
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>自閉合標籤:</strong> 如 &lt;img /&gt;、&lt;input /&gt; 必須加 /
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>列表渲染:</strong> 使用唯一的 key 屬性
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 在 JSX 中寫複雜邏輯，應提取為函式
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>事件命名:</strong> 使用 camelCase (onClick, onChange)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 濫用 dangerouslySetInnerHTML
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

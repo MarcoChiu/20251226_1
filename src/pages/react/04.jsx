@@ -99,6 +99,221 @@ export default function RenderMultiplePage() {
                 {error && <div className="alert alert-danger mt-3">⚠️ {error}</div>}
             </div>
             </div></div></div></div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-slash me-2 text-primary"></i>
+                                程式碼範例
+                            </h3>
+                            
+                            <div className="mb-4">
+                                <h5 className="mb-3">1. map 渲染列表</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const fruits = ['Apple', 'Banana', 'Orange'];
+
+// 使用 map 渲染列表
+return (
+  <ul>
+    {fruits.map((fruit, index) => (
+      <li key={index}>{fruit}</li>
+    ))}
+  </ul>
+);
+
+// 物件陣列渲染
+const users = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' }
+];
+
+return (
+  <div>
+    {users.map(user => (
+      <div key={user.id}>{user.name}</div>
+    ))}
+  </div>
+);`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">2. 陣列狀態不可變更新</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const [items, setItems] = useState([1, 2, 3]);
+
+// ❌ 錯誤：直接修改陣列
+items.push(4); // 不會觸發重新渲染
+
+// ✅ 正確：複製陣列後修改
+setItems([...items, 4]); // 新增
+
+// ✅ 更新特定索引
+setItems(items.map((item, i) => 
+  i === 1 ? item + 10 : item
+));
+
+// ✅ 刪除特定索引
+setItems(items.filter((_, i) => i !== 1));
+
+// ✅ 函式式更新（推薦）
+setItems(prevItems => [...prevItems, 4]);`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">3. key 屬性的重要性</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`// ❌ 錯誤：使用 index 作為 key（順序會改變時）
+{items.map((item, index) => (
+  <div key={index}>{item}</div>
+))}
+
+// ✅ 正確：使用唯一 ID
+{items.map(item => (
+  <div key={item.id}>{item.name}</div>
+))}
+
+// ⚠️ 可接受：靜態列表使用 index
+{['Red', 'Green', 'Blue'].map((color, index) => (
+  <div key={index}>{color}</div>
+))}
+
+// Key 作用：
+// 1. 幫助 React 識別哪些元素改變
+// 2. 提升渲染效能
+// 3. 保持元件狀態正確`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">4. 更新陣列中的物件</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const [meals, setMeals] = useState([
+  { id: 1, name: '便當', qty: 0 },
+  { id: 2, name: '麵食', qty: 0 }
+]);
+
+// 方法一：使用 map
+const updateQty = (id) => {
+  setMeals(prevMeals =>
+    prevMeals.map(meal =>
+      meal.id === id 
+        ? { ...meal, qty: meal.qty + 1 }
+        : meal
+    )
+  );
+};
+
+// 方法二：找到索引後更新
+const updateByIndex = (index) => {
+  setMeals(prevMeals => {
+    const newMeals = [...prevMeals];
+    newMeals[index] = {
+      ...newMeals[index],
+      qty: newMeals[index].qty + 1
+    };
+    return newMeals;
+  });
+};`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">5. 條件渲染列表</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const [products, setProducts] = useState([...]);
+
+// 過濾後渲染
+return (
+  <div>
+    {products
+      .filter(product => product.inStock)
+      .map(product => (
+        <ProductCard key={product.id} {...product} />
+      ))}
+  </div>
+);
+
+// 空列表處理
+{products.length === 0 ? (
+  <p>沒有產品</p>
+) : (
+  products.map(product => <div key={product.id}>...</div>)
+)}`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>唯一 key:</strong> 使用穩定的唯一 ID 作為 key
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>不可變更新:</strong> 使用 map/filter/spread 而非 push/splice
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>函式式更新:</strong> 依賴舊狀態時使用 prevState
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 會改變順序的列表使用 index 作為 key
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>空列表處理:</strong> 提供友善的空狀態訊息
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 在 render 中進行昂貴的計算，改用 useMemo
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

@@ -79,6 +79,184 @@ export default function RenderSinglePage() {
                 )}
             </div>
             </div></div></div></div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-slash me-2 text-primary"></i>
+                                程式碼範例
+                            </h3>
+                            
+                            <div className="mb-4">
+                                <h5 className="mb-3">1. useState 基本用法</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`import { useState } from 'react';
+
+function Counter() {
+  // [狀態變數, 更新函式] = useState(初始值)
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>計數: {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        +1
+      </button>
+    </div>
+  );
+}`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">2. 物件狀態更新</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const [user, setUser] = useState({
+  name: 'Tom',
+  age: 25,
+  email: 'tom@example.com'
+});
+
+// ❌ 錯誤：直接修改
+user.age = 26; // 不會觸發重新渲染
+
+// ✅ 正確：使用 spread operator
+setUser({
+  ...user,
+  age: 26
+});
+
+// ✅ 正確：函式式更新
+setUser(prevUser => ({
+  ...prevUser,
+  age: prevUser.age + 1
+}));`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">3. 非同步狀態更新</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const [loading, setLoading] = useState(false);
+const [data, setData] = useState(null);
+const [error, setError] = useState(null);
+
+const fetchData = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+    
+    const response = await fetch('/api/data');
+    const result = await response.json();
+    
+    setData(result);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};`}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-4">
+                                <h5 className="mb-3">4. Loading 與錯誤處理</h5>
+                                <pre className="bg-dark text-light p-3 rounded">
+                                    <code>{`const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState(null);
+
+const handleSubmit = async () => {
+  try {
+    setIsLoading(true);
+    setError(null); // 清除舊錯誤
+    
+    // 模擬 API 請求
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // 處理成功邏輯
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setIsLoading(false); // 無論成功失敗都關閉 loading
+  }
+};
+
+// JSX 中顯示
+{isLoading && <Spinner />}
+{error && <Alert>{error}</Alert>}`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>函式式更新:</strong> 當新狀態依賴舊狀態時使用
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>不可變更新:</strong> 使用 spread operator 複製物件
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>錯誤處理:</strong> 使用 try-catch-finally 結構
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 直接修改狀態物件 (mutation)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>Loading 狀態:</strong> 提供視覺回饋給使用者
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 在非同步操作中忘記清理 loading 狀態
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 };
