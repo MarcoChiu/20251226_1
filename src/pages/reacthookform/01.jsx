@@ -215,6 +215,7 @@ export default function ReactHookFormAiPage() {
         setValue('email', '');
         setValue('phone', '');
         setValue('interest', []);
+        setValue('agree', false);
         setValue('gender', '');
         setValue('city', '');
         setValue('district', '');
@@ -365,6 +366,28 @@ export default function ReactHookFormAiPage() {
                                     errors={errors.interest}
                                     validation={{ required: "請至少選擇一個興趣" }}
                                 />
+
+                                {/* Checkbox 單選範例 */}
+                                <div className="mb-3">
+                                    <div className="form-check">
+                                        <input
+                                            id="agree"
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            {...register("agree", { 
+                                                required: "請同意服務條款" 
+                                            })}
+                                        />
+                                        <label htmlFor="agree" className="form-check-label">
+                                            我同意服務條款
+                                        </label>
+                                    </div>
+                                    {errors.agree && (
+                                        <div className="text-danger small mt-1">
+                                            {errors.agree.message}
+                                        </div>
+                                    )}
+                                </div>
 
                                 <RadioGroup
                                     label="性別"
