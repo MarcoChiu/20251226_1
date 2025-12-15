@@ -179,6 +179,17 @@ npm i bootstrap
 ```bash
 npm i react-hook-form
 ```
+
+### @reduxjs/toolkit
+```bash
+npm install @reduxjs/toolkit
+```
+
+### react-redux
+```bash
+npm install react-redux
+```
+
 **基本使用:**
 ```javascript
 import { useForm } from 'react-hook-form';
@@ -414,3 +425,41 @@ git push -u origin main --force
 ```bash
 https://github.com/streamich/react-use
 ```
+
+### React Redux Toolkit
+專案使用 Redux Toolkit 進行全域狀態管理。
+
+**核心檔案:**
+- `src/store.jsx`: Redux Store 設定檔
+- `src/slice/todosSlice.jsx`: 待辦事項 Slice
+- `src/slice/messageSlice.jsx`: 全域訊息通知 Slice
+- `src/components/MessageToast.jsx`: 共用訊息通知元件
+
+**Message Slice 功能:**
+- 支援多種訊息類型: success / info / warning / error / primary / secondary / light / dark
+- `createAsyncMessage`: 支援自動刪除的非同步 Action
+- `MessageToast`: 自動顯示/隱藏訊息的 UI 元件
+
+**使用範例:**
+```javascript
+import { useDispatch } from 'react-redux';
+import { createAsyncMessage } from './slice/messageSlice';
+
+const Component = () => {
+    const dispatch = useDispatch();
+    
+    const handleAction = () => {
+        // 發送會自動消失的通知
+        dispatch(createAsyncMessage({ 
+            text: '操作成功！', 
+            type: 'success',
+            timeout: 3000 // 可選，預設 3000ms
+        }));
+    };
+};
+```
+
+**範例頁面:**
+- `src/pages/reactredux/01.jsx`: Redux 初始化與基本概念
+- `src/pages/reactredux/02.jsx`: Redux Todo List 實作 (整合訊息通知)
+- `src/pages/reactredux/03.jsx`: Redux Message Slice 完整功能展示

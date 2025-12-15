@@ -3,9 +3,14 @@ import { createRoot } from 'react-dom/client'
 import { App } from './App.jsx'
 import './assets/all.scss'
 
+import { store } from './store.jsx'
+import { Provider } from 'react-redux'
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </StrictMode>
   ,
 )
