@@ -47,9 +47,9 @@ import DynamicRoutingPage from './pages/reactrouterdom/03.jsx';
 import NestedRoutingPage from './pages/reactrouterdom/04.jsx';
 import NestedRoutingDemoPage from './pages/reactrouterdom/05.jsx';
 
-import ReduxBasicPage from './pages/reactredux/01.jsx';
-import ReduxTodoListPage from './pages/reactredux/02.jsx';
-import ReduxMessagePage from './pages/reactredux/03.jsx';
+import ReduxBasicPage from './pages/reactredux/03.jsx';
+import ReduxTodoListPage from './pages/reactredux/01.jsx';
+import ReduxMessagePage from './pages/reactredux/02.jsx';
 
 import UseStatePage from './pages/reactapp/01.jsx';
 import UseEffectPage from './pages/reactapp/02.jsx';
@@ -146,9 +146,9 @@ export const routes = [
         title: 'React Redux',
         showInMenu: true,
         children: [
-            { path: '01', element: <ReduxBasicPage />, title: '01.Redux Async Product', showInMenu: true },
-            { path: '02', element: <ReduxTodoListPage />, title: '02.Redux Todo List', showInMenu: true },
-            { path: '03', element: <ReduxMessagePage />, title: '03.Redux Message', showInMenu: true },
+            { path: '01', element: <ReduxTodoListPage />, title: '01.Redux Todo List', showInMenu: true },
+            { path: '02', element: <ReduxMessagePage />, title: '02.Redux Message', showInMenu: true },
+            { path: '03', element: <ReduxBasicPage />, title: '03.Redux Async Product', showInMenu: true },
         ]
     },
     {

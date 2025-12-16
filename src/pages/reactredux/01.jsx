@@ -1,363 +1,497 @@
-import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-    checkLogin,
-    login,
-    fetchProducts,
-    addProduct,
-    deleteProduct,
-    logout
-} from '../../slice/productSlice';
-import axios from 'axios';
-import { Loading } from '../../components/Loading';
-import styles from '../react/06.module.css';
+import { addTodo, toggleTodo, deleteTodo, editTodo } from '../../slice/todosSlice';
+import { createAsyncMessage } from '../../slice/messageSlice';
+import MessageToast from '../../components/MessageToast';
+import { useState } from 'react';
 
-const { VITE_APP_Path06, VITE_APP_Email06, VITE_APP_Password06 } = import.meta.env;
-
-// Upload helper function
-const uploadFile = async (file, token) => {
-    const formData = new FormData();
-    formData.append('file-to-upload', file);
-    const url = `https://vue3-course-api.hexschool.io/v2/api/${VITE_APP_Path06}/admin/upload`;
-
-    const res = await axios.post(url, formData, {
-        headers: { Authorization: token }
-    });
-    return res.data.imageUrl;
-};
-
-// 產品卡片元件
-const ProductCard = ({ onDelete, product, loading }) => {
-    const discount = Math.round((1 - product.price / product.origin_price) * 100);
-
-    return (
-        <div className="col">
-            <div className="card h-100 shadow-sm product-card">
-                <img src={product.imageUrl} alt={product.title} className={`card-img-top ${styles['product-card']}`} style={{ height: '250px', objectFit: 'cover' }} />
-                <div className="card-body">
-                    <h5 className="card-title">{product.title}</h5>
-                    <span className={`badge ${product.is_enabled ? 'bg-success' : 'bg-secondary'} mb-2`}>
-                        {product.is_enabled ? '✓ 販售中' : '✗ 已下架'}
-                    </span>
-                    <p className="text-muted small mb-2">📁 {product.category}</p>
-
-                    {product.description && <p className="card-text small">{product.description}</p>}
-                    {product.content && <p className="card-text text-muted" style={{ fontSize: '0.85rem' }}>{product.content}</p>}
-
-                    <div className="bg-light p-2 rounded mb-3">
-                        <span className="text-muted small">📦 {product.unit} × {product.num}</span>
-                    </div>
-
-                    <div className="bg-gradient p-3 rounded text-white mb-3" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                        <div className="d-flex justify-content-between align-items-center mb-1">
-                            <span className="text-decoration-line-through opacity-75 small">原價 NT$ {product.origin_price?.toLocaleString()}</span>
-                            {discount > 0 && <span className="badge bg-white bg-opacity-25 small">省 {discount}%</span>}
-                        </div>
-                        <div className="fs-4 fw-bold">NT$ {product.price?.toLocaleString()}</div>
-                    </div>
-
-                    {product.imagesUrl && product.imagesUrl.length > 0 && (
-                        <div className="border-top pt-3 mb-3">
-                            <p className="text-muted small fw-bold mb-2">🖼️ 更多圖片</p>
-                            <div className="d-flex gap-2 flex-wrap">
-                                {product.imagesUrl.map((img, idx) => (
-                                    <img
-                                        key={idx}
-                                        src={img}
-                                        alt={`${product.title}-${idx}`}
-                                        className={`rounded ${styles['gallery-image']}`}
-                                        style={{ width: '80px', height: '80px', objectFit: 'cover', cursor: 'pointer' }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="border-top pt-3">
-                        <button
-                            className="btn btn-danger w-100"
-                            onClick={() => onDelete(product.id, product.title)}
-                            disabled={loading}
-                        >
-                            {loading ? '處理中...' : '🗑️ 刪除產品'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-// 上傳區域元件
-const UploadSection = ({ selectedFile, previewUrl, uploadedImageUrl, loading, onFileChange, onUpload }) => {
-    return (
-        <div className="card mb-4 shadow-sm">
-            <div className="card-body">
-                <h3 className="card-title">📤 上傳圖片</h3>
-                <p className="text-muted small mb-3">
-                    支援格式：JPG、JPEG、PNG，檔案大小限制 3MB
-                </p>
-
-                <div className="d-flex gap-3 align-items-center flex-wrap mb-3">
-                    <div className="file-input-wrapper">
-                        <input
-                            type="file"
-                            className="form-control d-none"
-                            id="file-upload"
-                            accept=".jpg,.jpeg,.png"
-                            onChange={onFileChange}
-                        />
-                        <label htmlFor="file-upload" className="btn btn-outline-secondary">
-                            📁 選擇檔案
-                        </label>
-                    </div>
-
-                    {selectedFile && (
-                        <span className="text-muted small">
-                            已選擇：{selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
-                        </span>
-                    )}
-
-                    <button
-                        className="btn btn-success"
-                        onClick={onUpload}
-                        disabled={!selectedFile || loading}
-                    >
-                        {loading ? '上傳中...' : '⬆️ 上傳'}
-                    </button>
-                </div>
-
-                {previewUrl && (
-                    <div className="mt-3">
-                        <p className="text-muted small">預覽：</p>
-                        <img src={previewUrl} alt="預覽" className="img-thumbnail" style={{ maxWidth: '200px', maxHeight: '200px' }} />
-                    </div>
-                )}
-
-                {uploadedImageUrl && (
-                    <div className="alert alert-success mt-3">
-                        <p className="small mb-2">
-                            ✅ 上傳成功！圖片網址：
-                        </p>
-                        <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            value={uploadedImageUrl}
-                            readOnly
-                            onClick={(e) => e.target.select()}
-                        />
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-};
-
-// Error 元件
-const ErrorAlert = ({ error }) => {
-    return (
-        <div className="alert alert-danger d-flex align-items-center" role="alert">
-            <span className="fs-4 me-2">⚠️</span>
-            <span>錯誤：{error}</span>
-        </div>
-    );
-};
-
-export default function ReduxProductPage() {
+//1.匯入useDispatch
+//2.匯入action
+export default function ReduxTodoListPage() {
+    const todos = useSelector((state) => state.todos.items);
     const dispatch = useDispatch();
-    const { products, status, error, isLoggedIn, token } = useSelector((state) => state.product);
+    const [inputValue, setInputValue] = useState('');
+    const [editingId, setEditingId] = useState(null);
+    const [editingText, setEditingText] = useState('');
 
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
-    const [uploadedImageUrl, setUploadedImageUrl] = useState('');
-    const [uploadLoading, setUploadLoading] = useState(false);
-
-    // Initial Check
-    useEffect(() => {
-        dispatch(checkLogin())
-            .unwrap()
-            .then(() => {
-                dispatch(fetchProducts());
-            })
-            .catch(() => {
-                dispatch(login({ username: VITE_APP_Email06, password: VITE_APP_Password06 }))
-                    .unwrap()
-                    .then(() => {
-                        dispatch(fetchProducts());
-                    })
-                    .catch((err) => {
-                        console.error('Login failed:', err);
-                    });
-            });
-    }, [dispatch]);
-
-    // 處理檔案選擇
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!validTypes.includes(file.type)) {
-            alert('❌ 僅支援 JPG、JPEG 或 PNG 格式的圖片');
-            return;
-        }
-
-        if (file.size > 3 * 1024 * 1024) {
-            alert('❌ 檔案大小不能超過 3MB');
-            return;
-        }
-
-        setSelectedFile(file);
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setPreviewUrl(reader.result);
-        };
-        reader.readAsDataURL(file);
-    };
-
-    // 處理上傳
-    const handleUpload = async () => {
-        if (!selectedFile) return;
-        setUploadLoading(true);
-        try {
-            const imageUrl = await uploadFile(selectedFile, token);
-            setUploadedImageUrl(imageUrl);
-            alert('✅ 圖片上傳成功！');
-            setSelectedFile(null);
-            setPreviewUrl(null);
-        } catch (error) {
-            alert('❌ 上傳失敗: ' + (error.response?.data?.message || error.message));
-        } finally {
-            setUploadLoading(false);
+    const handleAddTodo = () => {
+        if (inputValue.trim()) {
+            dispatch(addTodo(inputValue));
+            dispatch(createAsyncMessage({ text: '新增成功', type: 'success', timeout: 3000 }));
+            setInputValue('');
         }
     };
 
-    // 處理刪除
-    const handleDeleteProduct = (id, title) => {
-        if (confirm(`確定要刪除「${title}」嗎？`)) {
-            dispatch(deleteProduct(id));
+    const handleToggle = (id) => {
+        dispatch(toggleTodo(id));
+    };
+
+    const handleDelete = (id) => {
+        dispatch(deleteTodo(id));
+        dispatch(createAsyncMessage({ text: '刪除成功', type: 'error', timeout: 3000 }));
+    };
+
+    const handleEdit = (id, text) => {
+        setEditingId(id);
+        setEditingText(text);
+    };
+
+    const handleSaveEdit = (id) => {
+        if (editingText.trim()) {
+            dispatch(editTodo({ id, text: editingText }));
+            dispatch(createAsyncMessage({ text: '編輯已儲存', type: 'info', timeout: 3000 }));
+            setEditingId(null);
+            setEditingText('');
         }
     };
 
-    // 處理新增 (隨機資料)
-    const handleAddProduct = () => {
-        const categories = ['電子產品', '服飾配件', '美妝保養', '食品飲料', '運動健身', '家居生活', '書籍文具', '玩具遊戲', '寵物用品', '汽車用品', '戶外露營', '樂器音響', '手作材料', '辦公用品', '清潔用品'];
-        const units = ['個', '件', '組', '盒', '包', '瓶', '雙', '台', '支', '條', '張', '本', '袋', '罐', '桶'];
-        const images = [
-            'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
-            'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-            'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400',
-            'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400',
-            'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=400',
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-            'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
-            'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400',
-            'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400',
-            'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400',
-            'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400',
-            'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',
-            'https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=400',
-            'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400',
-            'https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=400',
-        ];
-
-        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-        const randomUnit = units[Math.floor(Math.random() * units.length)];
-        const randomOriginPrice = Math.floor(Math.random() * 5000) + 500;
-        const randomDiscount = Math.floor(Math.random() * 40) + 10;
-        const randomPrice = Math.floor(randomOriginPrice * (100 - randomDiscount) / 100);
-        const randomEnabled = Math.random() > 0.3 ? 1 : 0;
-
-        // 隨機選擇 1-3 張圖片
-        const shuffledImages = [...images].sort(() => Math.random() - 0.5);
-        const randomImageCount = Math.floor(Math.random() * 3) + 1;
-        const selectedImages = shuffledImages.slice(0, randomImageCount);
-
-        const temp = {
-            title: `${randomCategory}商品_${Date.now()}`,
-            category: randomCategory,
-            origin_price: randomOriginPrice,
-            price: randomPrice,
-            unit: randomUnit,
-            description: `這是 ${randomCategory} 的精選商品，品質保證，值得擁有！`,
-            content: `產品特色：高品質、耐用、實惠。`,
-            is_enabled: randomEnabled,
-            imageUrl: selectedImages[0],
-            imagesUrl: selectedImages
-        };
-
-        dispatch(addProduct(temp));
+    const handleCancelEdit = () => {
+        setEditingId(null);
+        setEditingText('');
     };
 
     return (
         <div className="container py-5">
-            <div className="text-center mb-5 p-5 rounded-4 text-white position-relative overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', boxShadow: '0 10px 40px rgba(102, 126, 234, 0.3)' }}>
+            {/* 標題區塊 */}
+            <div
+                className="text-center mb-5 p-5 rounded-4 text-white position-relative overflow-hidden"
+                style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    boxShadow: '0 10px 40px rgba(102, 126, 234, 0.3)'
+                }}
+            >
                 <div className="position-relative" style={{ zIndex: 1 }}>
-                    <h1 className="display-4 fw-bold mb-3"><i className="bi bi-cloud-arrow-up me-3"></i>Redux Async Thunk</h1>
-                    <p className="lead mb-0">結合 Redux Toolkit 與 Axios 進行 API 串接</p>
+                    <h1 className="display-4 fw-bold mb-3">
+                        <i className="bi bi-box-seam me-3"></i>
+                        Redux Toolkit - Todo List
+                    </h1>
+                    <p className="lead mb-0">了解 Redux 的核心概念與基本使用方式</p>
                 </div>
-                <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)', zIndex: 0 }}></div>
+                <div
+                    className="position-absolute top-0 start-0 w-100 h-100"
+                    style={{
+                        background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+                        zIndex: 0
+                    }}
+                ></div>
             </div>
 
+            {/* 功能說明 */}
             <div className="row mb-5">
                 <div className="col-12">
                     <div className="card border-0 shadow-sm">
                         <div className="card-body p-4">
-                            <h2 className="h4 mb-4"><i className="bi bi-info-circle me-2 text-primary"></i>Redux Async 說明</h2>
-                            <p>本範例展示如何使用 <code>createAsyncThunk</code> 處理非同步 API 請求，並將 Products 狀態存於 Store 中。</p>
-                            <ul>
-                                <li><strong>checkLogin:</strong> 檢查 Cookie Token 驗證狀態</li>
-                                <li><strong>fetchProducts:</strong> 取得遠端產品列表，Store</li>
-                                <li><strong>addProduct / deleteProduct:</strong> 呼叫 API 後 Dispatch 更新</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="row mb-4">
-                <div className="col-12">
-                    <div className="card border-0 shadow-sm">
-                        <div className="card-body">
-                            <h3 className="card-title mb-4"><i className="bi bi-code-square me-2"></i>互動範例</h3>
-
-                            {status === 'loading' && <Loading><b>載入中...</b></Loading>}
-                            {error && <ErrorAlert error={error} />}
-
-                            <div className="container mt-2">
-                                <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                                    <h1 className="text-center flex-grow-1 mb-0">🛍️ 產品列表 (Redux)</h1>
-                                    <button className="btn btn-primary btn-lg" onClick={handleAddProduct} disabled={status === 'loading'}>
-                                        {status === 'loading' ? '處理中...' : '➕ 新增產品'}
-                                    </button>
+                            <h2 className="h4 mb-4">
+                                <i className="bi bi-info-circle me-2 text-primary"></i>
+                                什麼是 Redux?
+                            </h2>
+                            <div className="row g-4">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <div className="flex-shrink-0">
+                                            <div className="bg-primary bg-opacity-10 rounded-circle p-3">
+                                                <i className="bi bi-diagram-3 text-primary fs-4"></i>
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow-1 ms-3">
+                                            <h5 className="mb-2">核心概念</h5>
+                                            <ul className="text-muted mb-0">
+                                                <li><strong>Store</strong>: 全域狀態儲存中心</li>
+                                                <li><strong>State</strong>: 應用程式的狀態資料</li>
+                                                <li><strong>Action</strong>: 描述發生什麼事的物件</li>
+                                                <li><strong>Reducer</strong>: 根據 Action 更新 State</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <UploadSection
-                                    selectedFile={selectedFile}
-                                    previewUrl={previewUrl}
-                                    uploadedImageUrl={uploadedImageUrl}
-                                    loading={uploadLoading}
-                                    onFileChange={handleFileChange}
-                                    onUpload={handleUpload}
-                                />
-
-                                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                                    {products && products.map(product => (
-                                        <ProductCard
-                                            key={product.id}
-                                            product={product}
-                                            onDelete={handleDeleteProduct}
-                                            loading={status === 'loading'}
-                                        />
-                                    ))}
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <div className="flex-shrink-0">
+                                            <div className="bg-success bg-opacity-10 rounded-circle p-3">
+                                                <i className="bi bi-check2-circle text-success fs-4"></i>
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow-1 ms-3">
+                                            <h5 className="mb-2">主要優勢</h5>
+                                            <ul className="text-muted mb-0">
+                                                <li>跨元件共用狀態</li>
+                                                <li>可預測的狀態管理</li>
+                                                <li>強大的開發工具支援</li>
+                                                <li>時間旅行除錯功能</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* 互動範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-code-square me-2 text-primary"></i>
+                                Todo List 範例
+                            </h3>
+
+                            {/* 新增 Todo */}
+                            <div className="mb-4">
+                                <label className="form-label fw-bold">新增待辦事項</label>
+                                <div className="input-group">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="請輸入待辦事項..."
+                                        value={inputValue}
+                                        onChange={(e) => setInputValue(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
+                                    />
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleAddTodo}
+                                    >
+                                        <i className="bi bi-plus-lg me-2"></i>
+                                        新增
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Todo 列表 */}
+                            <div className="mb-3">
+                                <label className="form-label fw-bold">
+                                    待辦清單
+                                    <span className="badge bg-primary ms-2">{todos.length} 項</span>
+                                </label>
+                                {todos.length === 0 ? (
+                                    <div className="alert alert-info">
+                                        <i className="bi bi-info-circle me-2"></i>
+                                        目前沒有待辦事項
+                                    </div>
+                                ) : (
+                                    <ul className="list-group">
+                                        {todos.map((todo) => (
+                                            <li
+                                                key={todo.id}
+                                                className="list-group-item d-flex align-items-center"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="form-check-input me-3"
+                                                    checked={todo.completed}
+                                                    onChange={() => handleToggle(todo.id)}
+                                                    disabled={editingId === todo.id}
+                                                />
+                                                {editingId === todo.id ? (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control form-control-sm me-2"
+                                                            value={editingText}
+                                                            onChange={(e) => setEditingText(e.target.value)}
+                                                            onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit(todo.id)}
+                                                            autoFocus
+                                                        />
+                                                        <button
+                                                            className="btn btn-sm btn-success me-2"
+                                                            onClick={() => handleSaveEdit(todo.id)}
+                                                        >
+                                                            <i className="bi bi-check-lg"></i>
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-sm btn-secondary"
+                                                            onClick={handleCancelEdit}
+                                                        >
+                                                            <i className="bi bi-x-lg"></i>
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span
+                                                            style={{
+                                                                textDecoration: todo.completed ? 'line-through' : 'none',
+                                                                color: todo.completed ? '#6c757d' : '#212529',
+                                                                flex: 1
+                                                            }}
+                                                        >
+                                                            {todo.text}
+                                                        </span>
+                                                        <button
+                                                            className="btn btn-sm btn-primary me-2"
+                                                            onClick={() => handleEdit(todo.id, todo.text)}
+                                                        >
+                                                            <i className="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-sm btn-danger"
+                                                            onClick={() => handleDelete(todo.id)}
+                                                        >
+                                                            <i className="bi bi-trash"></i>
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+
+                            {/* 統計資訊 */}
+                            {todos.length > 0 && (
+                                <div className="row g-3 mt-3">
+                                    <div className="col-md-4">
+                                        <div className="card bg-light">
+                                            <div className="card-body text-center">
+                                                <h6 className="text-muted">總數</h6>
+                                                <h3 className="mb-0">{todos.length}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="card bg-success bg-opacity-10">
+                                            <div className="card-body text-center">
+                                                <h6 className="text-muted">已完成</h6>
+                                                <h3 className="mb-0 text-success">
+                                                    {todos.filter(t => t.completed).length}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="card bg-warning bg-opacity-10">
+                                            <div className="card-body text-center">
+                                                <h6 className="text-muted">待完成</h6>
+                                                <h3 className="mb-0 text-warning">
+                                                    {todos.filter(t => !t.completed).length}
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 程式碼範例 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-code-slash me-2 text-success"></i>
+                                程式碼範例
+                            </h3>
+
+                            <h5 className="mt-4 mb-3">1. 建立 Slice (todosSlice.jsx)</h5>
+                            <pre className="bg-light p-4 rounded-3 overflow-auto">
+                                <code>{`import { createSlice } from '@reduxjs/toolkit';
+
+const todosSlice = createSlice({
+  name: 'todos',
+  initialState: {
+    items: []
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push({
+        id: Date.now(),
+        text: action.payload,
+        completed: false
+      });
+    },
+    toggleTodo: (state, action) => {
+      const todo = state.items.find(t => t.id === action.payload);
+      if (todo) {
+        todo.completed = !todo.completed;
+      }
+    },
+    deleteTodo: (state, action) => {
+      state.items = state.items.filter(t => t.id !== action.payload);
+    },
+    editTodo: (state, action) => {
+      const todo = state.items.find(t => t.id === action.payload.id);
+      if (todo) {
+        todo.text = action.payload.text;
+      }
+    }
+  }
+});
+
+export const { addTodo, toggleTodo, deleteTodo, editTodo } = todosSlice.actions;
+export default todosSlice.reducer;`}</code>
+                            </pre>
+
+                            <h5 className="mt-4 mb-3">2. 配置 Store (store.jsx)</h5>
+                            <pre className="bg-light p-4 rounded-3 overflow-auto">
+                                <code>{`import { configureStore } from '@reduxjs/toolkit';
+import todosReducer from './slice/todosSlice';
+
+export const store = configureStore({
+  reducer: {
+    todos: todosReducer,
+  },
+});`}</code>
+                            </pre>
+
+                            <h5 className="mt-4 mb-3">3. 提供 Store (main.jsx)</h5>
+                            <pre className="bg-light p-4 rounded-3 overflow-auto">
+                                <code>{`import { Provider } from 'react-redux';
+import { store } from './store';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);`}</code>
+                            </pre>
+
+                            <h5 className="mt-4 mb-3">4. 在元件中使用</h5>
+                            <pre className="bg-light p-4 rounded-3 overflow-auto">
+                                <code>{`import { useSelector, useDispatch } from 'react-redux';
+import { addTodo, toggleTodo, deleteTodo, editTodo } from './slice/todosSlice';
+
+function TodoList() {
+  // 讀取狀態
+  const todos = useSelector((state) => state.todos.items);
+  
+  // 取得 dispatch 函式
+  const dispatch = useDispatch();
+  
+  // 新增 Todo
+  const handleAdd = (text) => {
+    dispatch(addTodo(text));
+  };
+  
+  // 切換完成狀態
+  const handleToggle = (id) => {
+    dispatch(toggleTodo(id));
+  };
+  
+  // 刪除 Todo
+  const handleDelete = (id) => {
+    dispatch(deleteTodo(id));
+  };
+  
+  // 編輯 Todo
+  const handleEdit = (id, text) => {
+    dispatch(editTodo({ id, text }));
+  };
+  
+  return (
+    <div>
+      {todos.map(todo => (
+        <div key={todo.id}>
+          <span>{todo.text}</span>
+          <button onClick={() => handleToggle(todo.id)}>完成</button>
+          <button onClick={() => handleEdit(todo.id, '新文字')}>編輯</button>
+          <button onClick={() => handleDelete(todo.id)}>刪除</button>
+        </div>
+      ))}
+    </div>
+  );
+}`}</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Redux 資料流程 */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm bg-light">
+                        <div className="card-body">
+                            <h3 className="card-title mb-4">
+                                <i className="bi bi-arrow-repeat me-2 text-info"></i>
+                                Redux 資料流程
+                            </h3>
+                            <div className="text-center">
+                                <div className="d-inline-flex flex-column align-items-center">
+                                    <div className="alert alert-primary mb-3 w-100">
+                                        <strong>1. UI 元件</strong><br />
+                                        使用者觸發事件
+                                    </div>
+                                    <i className="bi bi-arrow-down fs-3 text-primary mb-3"></i>
+                                    <div className="alert alert-success mb-3 w-100">
+                                        <strong>2. dispatch(action)</strong><br />
+                                        發送 Action
+                                    </div>
+                                    <i className="bi bi-arrow-down fs-3 text-success mb-3"></i>
+                                    <div className="alert alert-warning mb-3 w-100">
+                                        <strong>3. Reducer</strong><br />
+                                        根據 Action 更新 State
+                                    </div>
+                                    <i className="bi bi-arrow-down fs-3 text-warning mb-3"></i>
+                                    <div className="alert alert-info mb-3 w-100">
+                                        <strong>4. Store</strong><br />
+                                        儲存新的 State
+                                    </div>
+                                    <i className="bi bi-arrow-down fs-3 text-info mb-3"></i>
+                                    <div className="alert alert-secondary mb-0 w-100">
+                                        <strong>5. UI 更新</strong><br />
+                                        React 重新渲染
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 最佳實踐 */}
+            <div className="row">
+                <div className="col-12">
+                    <div className="card border-0 shadow-sm">
+                        <div className="card-body">
+                            <h3 className="card-title mb-3">
+                                <i className="bi bi-lightbulb me-2 text-warning"></i>
+                                最佳實踐
+                            </h3>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>使用 Redux Toolkit:</strong> 簡化 Redux 配置與使用
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>模組化 Slice:</strong> 依功能分割不同的 Slice
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免過度使用:</strong> 不是所有狀態都需要放 Redux
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6">
+                                    <div className="d-flex align-items-start">
+                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
+                                        <div>
+                                            <strong>避免:</strong> 直接修改 state，使用 Immer 已內建在 RTK
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {/* 訊息通知元件 */}
+            <MessageToast />
         </div>
     );
 }
+

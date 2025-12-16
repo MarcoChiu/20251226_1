@@ -1,56 +1,65 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { addTodo, toggleTodo, deleteTodo, editTodo } from '../../slice/todosSlice';
-import { createAsyncMessage } from '../../slice/messageSlice';
+import { addMessage, markAsRead, markAllAsRead, deleteMessage, clearAllMessages, createAsyncMessage } from '../../slice/messageSlice';
 import MessageToast from '../../components/MessageToast';
 import { useState } from 'react';
 
-//1.匯入useDispatch
-//2.匯入action
-export default function ReduxTodoListPage() {
-    const todos = useSelector((state) => state.todos.items);
+export default function MessageSlicePage() {
+    const { messages, unreadCount } = useSelector((state) => state.message);
     const dispatch = useDispatch();
     const [inputValue, setInputValue] = useState('');
-    const [editingId, setEditingId] = useState(null);
-    const [editingText, setEditingText] = useState('');
+    const [messageType, setMessageType] = useState('info');
+    const [timeout, setTimeoutVal] = useState(3000);
 
-    const handleAddTodo = () => {
+
+    // 自動添加 CSS 動畫 (已移至 MessageToast 元件)
+    // const styleElement = document.createElement('style');
+
+
+    const handleAddMessage = () => {
         if (inputValue.trim()) {
-            dispatch(addTodo(inputValue));
-            dispatch(createAsyncMessage({ text: '新增成功', type: 'success', timeout: 3000 }));
+            dispatch(createAsyncMessage({
+                text: inputValue,
+                type: messageType,
+                timeout: Number(timeout)
+            }));
             setInputValue('');
         }
     };
 
-    const handleToggle = (id) => {
-        dispatch(toggleTodo(id));
+    const getMessageIcon = (type) => {
+        const icons = {
+            success: 'check-circle-fill',
+            info: 'info-circle-fill',
+            warning: 'exclamation-triangle-fill',
+            error: 'x-circle-fill',
+            primary: 'flag-fill',
+            secondary: 'gear-fill',
+            light: 'sun-fill',
+            dark: 'moon-fill'
+        };
+        return icons[type] || 'info-circle-fill';
     };
 
-    const handleDelete = (id) => {
-        dispatch(deleteTodo(id));
-        dispatch(createAsyncMessage({ text: '刪除成功', type: 'error', timeout: 3000 }));
-    };
-
-    const handleEdit = (id, text) => {
-        setEditingId(id);
-        setEditingText(text);
-    };
-
-    const handleSaveEdit = (id) => {
-        if (editingText.trim()) {
-            dispatch(editTodo({ id, text: editingText }));
-            dispatch(createAsyncMessage({ text: '編輯已儲存', type: 'info', timeout: 3000 }));
-            setEditingId(null);
-            setEditingText('');
-        }
-    };
-
-    const handleCancelEdit = () => {
-        setEditingId(null);
-        setEditingText('');
+    const getMessageColor = (type) => {
+        const colors = {
+            success: 'success',
+            info: 'info',
+            warning: 'warning',
+            error: 'danger',
+            primary: 'primary',
+            secondary: 'secondary',
+            light: 'light',
+            dark: 'dark'
+        };
+        return colors[type] || 'info';
     };
 
     return (
         <div className="container py-5">
+            {/* 右上角訊息通知區 */}
+            {/* 右上角訊息通知區 */}
+            <MessageToast />
+
             {/* 標題區塊 */}
             <div
                 className="text-center mb-5 p-5 rounded-4 text-white position-relative overflow-hidden"
@@ -61,18 +70,11 @@ export default function ReduxTodoListPage() {
             >
                 <div className="position-relative" style={{ zIndex: 1 }}>
                     <h1 className="display-4 fw-bold mb-3">
-                        <i className="bi bi-box-seam me-3"></i>
-                        Redux Toolkit - Todo List
+                        <i className="bi bi-envelope me-3"></i>
+                        Redux Toolkit - Message Slice
                     </h1>
-                    <p className="lead mb-0">了解 Redux 的核心概念與基本使用方式</p>
+                    <p className="lead mb-0">多狀態管理與未讀計數功能 + 右上角彈出通知</p>
                 </div>
-                <div
-                    className="position-absolute top-0 start-0 w-100 h-100"
-                    style={{
-                        background: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-                        zIndex: 0
-                    }}
-                ></div>
             </div>
 
             {/* 功能說明 */}
@@ -82,23 +84,22 @@ export default function ReduxTodoListPage() {
                         <div className="card-body p-4">
                             <h2 className="h4 mb-4">
                                 <i className="bi bi-info-circle me-2 text-primary"></i>
-                                什麼是 Redux?
+                                Message Slice 特色
                             </h2>
                             <div className="row g-4">
                                 <div className="col-md-6">
                                     <div className="d-flex align-items-start">
                                         <div className="flex-shrink-0">
                                             <div className="bg-primary bg-opacity-10 rounded-circle p-3">
-                                                <i className="bi bi-diagram-3 text-primary fs-4"></i>
+                                                <i className="bi bi-list-check text-primary fs-4"></i>
                                             </div>
                                         </div>
                                         <div className="flex-grow-1 ms-3">
-                                            <h5 className="mb-2">核心概念</h5>
+                                            <h5 className="mb-2">多狀態管理</h5>
                                             <ul className="text-muted mb-0">
-                                                <li><strong>Store</strong>: 全域狀態儲存中心</li>
-                                                <li><strong>State</strong>: 應用程式的狀態資料</li>
-                                                <li><strong>Action</strong>: 描述發生什麼事的物件</li>
-                                                <li><strong>Reducer</strong>: 根據 Action 更新 State</li>
+                                                <li>訊息列表 (messages)</li>
+                                                <li>未讀計數 (unreadCount)</li>
+                                                <li>訊息類型與時間戳記</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -107,16 +108,17 @@ export default function ReduxTodoListPage() {
                                     <div className="d-flex align-items-start">
                                         <div className="flex-shrink-0">
                                             <div className="bg-success bg-opacity-10 rounded-circle p-3">
-                                                <i className="bi bi-check2-circle text-success fs-4"></i>
+                                                <i className="bi bi-gear text-success fs-4"></i>
                                             </div>
                                         </div>
                                         <div className="flex-grow-1 ms-3">
-                                            <h5 className="mb-2">主要優勢</h5>
+                                            <h5 className="mb-2">進階功能</h5>
                                             <ul className="text-muted mb-0">
-                                                <li>跨元件共用狀態</li>
-                                                <li>可預測的狀態管理</li>
-                                                <li>強大的開發工具支援</li>
-                                                <li>時間旅行除錯功能</li>
+                                                <li>右上角彈出通知</li>
+                                                <li>支援自動刪除 (Auto Delete)</li>
+                                                <li>標記已讀/全部已讀</li>
+                                                <li>自動計算未讀數量</li>
+                                                <li>訊息類型分類與動畫</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -132,139 +134,190 @@ export default function ReduxTodoListPage() {
                 <div className="col-12">
                     <div className="card border-0 shadow-sm">
                         <div className="card-body">
-                            <h3 className="card-title mb-4">
-                                <i className="bi bi-code-square me-2 text-primary"></i>
-                                Todo List 範例
-                            </h3>
-
-                            {/* 新增 Todo */}
-                            <div className="mb-4">
-                                <label className="form-label fw-bold">新增待辦事項</label>
-                                <div className="input-group">
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="請輸入待辦事項..."
-                                        value={inputValue}
-                                        onChange={(e) => setInputValue(e.target.value)}
-                                        onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
-                                    />
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={handleAddTodo}
-                                    >
-                                        <i className="bi bi-plus-lg me-2"></i>
-                                        新增
-                                    </button>
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h3 className="card-title mb-0">
+                                    <i className="bi bi-chat-dots me-2 text-primary"></i>
+                                    訊息中心
+                                </h3>
+                                <div>
+                                    <span className="badge bg-danger fs-6 me-2">
+                                        {unreadCount} 則未讀
+                                    </span>
+                                    {messages.length > 0 && (
+                                        <>
+                                            <button
+                                                className="btn btn-sm btn-outline-primary me-2"
+                                                onClick={() => dispatch(markAllAsRead())}
+                                                disabled={unreadCount === 0}
+                                            >
+                                                <i className="bi bi-check-all me-1"></i>
+                                                全部標記已讀
+                                            </button>
+                                            <button
+                                                className="btn btn-sm btn-outline-danger"
+                                                onClick={() => dispatch(clearAllMessages())}
+                                            >
+                                                <i className="bi bi-trash me-1"></i>
+                                                清空全部
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Todo 列表 */}
-                            <div className="mb-3">
+                            {/* 新增訊息 */}
+                            <div className="mb-4">
+                                <label className="form-label fw-bold">新增訊息</label>
+                                <div className="row g-2">
+                                    <div className="col-md-8">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="請輸入訊息內容..."
+                                            value={inputValue}
+                                            onChange={(e) => setInputValue(e.target.value)}
+                                            onKeyPress={(e) => e.key === 'Enter' && handleAddMessage()}
+                                        />
+                                    </div>
+                                    <div className="col-md-2">
+                                        <select
+                                            className="form-select"
+                                            value={messageType}
+                                            onChange={(e) => setMessageType(e.target.value)}
+                                        >
+                                            <option value="success">成功 (Success)</option>
+                                            <option value="info">資訊 (Info)</option>
+                                            <option value="warning">警告 (Warning)</option>
+                                            <option value="error">錯誤 (Error)</option>
+                                            <option value="primary">主要 (Primary)</option>
+                                            <option value="secondary">次要 (Secondary)</option>
+                                            <option value="light">亮色 (Light)</option>
+                                            <option value="dark">暗色 (Dark)</option>
+                                        </select>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <div className="input-group">
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                value={timeout}
+                                                onChange={(e) => setTimeoutVal(e.target.value)}
+                                                placeholder="毫秒"
+                                                title="自動刪除時間(ms)"
+                                            />
+                                            <span className="input-group-text small">ms</span>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-2">
+                                        <button
+                                            className="btn btn-primary w-100"
+                                            onClick={handleAddMessage}
+                                        >
+                                            <i className="bi bi-plus-lg me-1"></i>
+                                            新增
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 訊息列表 */}
+                            <div>
                                 <label className="form-label fw-bold">
-                                    待辦清單
-                                    <span className="badge bg-primary ms-2">{todos.length} 項</span>
+                                    訊息列表
+                                    <span className="badge bg-secondary ms-2">{messages.length} 則</span>
                                 </label>
-                                {todos.length === 0 ? (
+                                {messages.length === 0 ? (
                                     <div className="alert alert-info">
-                                        <i className="bi bi-info-circle me-2"></i>
-                                        目前沒有待辦事項
+                                        <i className="bi bi-inbox me-2"></i>
+                                        目前沒有訊息
                                     </div>
                                 ) : (
-                                    <ul className="list-group">
-                                        {todos.map((todo) => (
-                                            <li
-                                                key={todo.id}
-                                                className="list-group-item d-flex align-items-center"
+                                    <div className="list-group">
+                                        {messages.map((message) => (
+                                            <div
+                                                key={message.id}
+                                                className={`list-group-item ${!message.read ? 'list-group-item-action' : ''}`}
+                                                style={{
+                                                    opacity: message.read ? 0.6 : 1,
+                                                    borderLeft: `4px solid var(--bs-${getMessageColor(message.type)})`
+                                                }}
                                             >
-                                                <input
-                                                    type="checkbox"
-                                                    className="form-check-input me-3"
-                                                    checked={todo.completed}
-                                                    onChange={() => handleToggle(todo.id)}
-                                                    disabled={editingId === todo.id}
-                                                />
-                                                {editingId === todo.id ? (
-                                                    <>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control form-control-sm me-2"
-                                                            value={editingText}
-                                                            onChange={(e) => setEditingText(e.target.value)}
-                                                            onKeyPress={(e) => e.key === 'Enter' && handleSaveEdit(todo.id)}
-                                                            autoFocus
-                                                        />
+                                                <div className="d-flex w-100 justify-content-between align-items-start">
+                                                    <div className="flex-grow-1">
+                                                        <div className="d-flex align-items-center mb-2">
+                                                            <i className={`bi bi-${getMessageIcon(message.type)} text-${getMessageColor(message.type)} me-2`}></i>
+                                                            <h6 className="mb-0">
+                                                                {message.text}
+                                                                {!message.read && (
+                                                                    <span className="badge bg-danger ms-2">NEW</span>
+                                                                )}
+                                                            </h6>
+                                                        </div>
+                                                        <small className="text-muted">
+                                                            <i className="bi bi-clock me-1"></i>
+                                                            {new Date(message.timestamp).toLocaleString('zh-TW')}
+                                                        </small>
+                                                    </div>
+                                                    <div className="d-flex gap-2">
+                                                        {!message.read && (
+                                                            <button
+                                                                className="btn btn-sm btn-outline-success"
+                                                                onClick={() => dispatch(markAsRead(message.id))}
+                                                                title="標記為已讀"
+                                                            >
+                                                                <i className="bi bi-check"></i>
+                                                            </button>
+                                                        )}
                                                         <button
-                                                            className="btn btn-sm btn-success me-2"
-                                                            onClick={() => handleSaveEdit(todo.id)}
-                                                        >
-                                                            <i className="bi bi-check-lg"></i>
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-sm btn-secondary"
-                                                            onClick={handleCancelEdit}
-                                                        >
-                                                            <i className="bi bi-x-lg"></i>
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <span
-                                                            style={{
-                                                                textDecoration: todo.completed ? 'line-through' : 'none',
-                                                                color: todo.completed ? '#6c757d' : '#212529',
-                                                                flex: 1
-                                                            }}
-                                                        >
-                                                            {todo.text}
-                                                        </span>
-                                                        <button
-                                                            className="btn btn-sm btn-primary me-2"
-                                                            onClick={() => handleEdit(todo.id, todo.text)}
-                                                        >
-                                                            <i className="bi bi-pencil"></i>
-                                                        </button>
-                                                        <button
-                                                            className="btn btn-sm btn-danger"
-                                                            onClick={() => handleDelete(todo.id)}
+                                                            className="btn btn-sm btn-outline-danger"
+                                                            onClick={() => dispatch(deleteMessage(message.id))}
+                                                            title="刪除"
                                                         >
                                                             <i className="bi bi-trash"></i>
                                                         </button>
-                                                    </>
-                                                )}
-                                            </li>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         ))}
-                                    </ul>
+                                    </div>
                                 )}
                             </div>
 
                             {/* 統計資訊 */}
-                            {todos.length > 0 && (
+                            {messages.length > 0 && (
                                 <div className="row g-3 mt-3">
-                                    <div className="col-md-4">
-                                        <div className="card bg-light">
+                                    <div className="col-md-3">
+                                        <div className="card bg-primary bg-opacity-10">
                                             <div className="card-body text-center">
-                                                <h6 className="text-muted">總數</h6>
-                                                <h3 className="mb-0">{todos.length}</h3>
+                                                <h6 className="text-muted">總訊息數</h6>
+                                                <h3 className="mb-0 text-primary">{messages.length}</h3>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-md-4">
+                                    <div className="col-md-3">
+                                        <div className="card bg-danger bg-opacity-10">
+                                            <div className="card-body text-center">
+                                                <h6 className="text-muted">未讀</h6>
+                                                <h3 className="mb-0 text-danger">{unreadCount}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
                                         <div className="card bg-success bg-opacity-10">
                                             <div className="card-body text-center">
-                                                <h6 className="text-muted">已完成</h6>
+                                                <h6 className="text-muted">已讀</h6>
                                                 <h3 className="mb-0 text-success">
-                                                    {todos.filter(t => t.completed).length}
+                                                    {messages.filter(m => m.read).length}
                                                 </h3>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-md-4">
-                                        <div className="card bg-warning bg-opacity-10">
+                                    <div className="col-md-3">
+                                        <div className="card bg-info bg-opacity-10">
                                             <div className="card-body text-center">
-                                                <h6 className="text-muted">待完成</h6>
-                                                <h3 className="mb-0 text-warning">
-                                                    {todos.filter(t => !t.completed).length}
+                                                <h6 className="text-muted">已讀率</h6>
+                                                <h3 className="mb-0 text-info">
+                                                    {Math.round((messages.filter(m => m.read).length / messages.length) * 100)}%
                                                 </h3>
                                             </div>
                                         </div>
@@ -286,109 +339,134 @@ export default function ReduxTodoListPage() {
                                 程式碼範例
                             </h3>
 
-                            <h5 className="mt-4 mb-3">1. 建立 Slice (todosSlice.jsx)</h5>
+                            <h5 className="mt-4 mb-3">1. 建立 Message Slice (messageSlice.jsx)</h5>
                             <pre className="bg-light p-4 rounded-3 overflow-auto">
                                 <code>{`import { createSlice } from '@reduxjs/toolkit';
 
-const todosSlice = createSlice({
-  name: 'todos',
+const messageSlice = createSlice({
+  name: 'message',
   initialState: {
-    items: []
+    messages: [],
+    unreadCount: 0
   },
   reducers: {
-    addTodo: (state, action) => {
-      state.items.push({
+    addMessage: (state, action) => {
+      state.messages.push({
         id: Date.now(),
-        text: action.payload,
-        completed: false
+        text: action.payload.text,
+        type: action.payload.type || 'info',
+        read: false,
+        timestamp: new Date().toISOString()
       });
+      state.unreadCount += 1;
     },
-    toggleTodo: (state, action) => {
-      const todo = state.items.find(t => t.id === action.payload);
-      if (todo) {
-        todo.completed = !todo.completed;
+    markAsRead: (state, action) => {
+      const message = state.messages.find(m => m.id === action.payload);
+      if (message && !message.read) {
+        message.read = true;
+        state.unreadCount = Math.max(0, state.unreadCount - 1);
       }
     },
-    deleteTodo: (state, action) => {
-      state.items = state.items.filter(t => t.id !== action.payload);
+    markAllAsRead: (state) => {
+      state.messages.forEach(message => {
+        message.read = true;
+      });
+      state.unreadCount = 0;
     },
-    editTodo: (state, action) => {
-      const todo = state.items.find(t => t.id === action.payload.id);
-      if (todo) {
-        todo.text = action.payload.text;
+    deleteMessage: (state, action) => {
+      const message = state.messages.find(m => m.id === action.payload);
+      if (message && !message.read) {
+        state.unreadCount = Math.max(0, state.unreadCount - 1);
       }
+      state.messages = state.messages.filter(m => m.id !== action.payload);
+    },
+    clearAllMessages: (state) => {
+      state.messages = [];
+      state.unreadCount = 0;
     }
   }
 });
 
-export const { addTodo, toggleTodo, deleteTodo, editTodo } = todosSlice.actions;
-export default todosSlice.reducer;`}</code>
+export const { 
+  addMessage, 
+  markAsRead, 
+  markAllAsRead, 
+  deleteMessage, 
+  clearAllMessages 
+} = messageSlice.actions;
+
+export const createAsyncMessage = (payload) => (dispatch) => {
+  const id = Date.now();
+  const timeout = payload.timeout || 3000;
+
+  dispatch(addMessage({
+    ...payload,
+    id
+  }));
+
+  setTimeout(() => {
+    dispatch(deleteMessage(id));
+  }, timeout);
+};
+
+export default messageSlice.reducer;`}</code>
                             </pre>
 
-                            <h5 className="mt-4 mb-3">2. 配置 Store (store.jsx)</h5>
+                            <h5 className="mt-4 mb-3">2. 更新 Store (store.jsx)</h5>
                             <pre className="bg-light p-4 rounded-3 overflow-auto">
                                 <code>{`import { configureStore } from '@reduxjs/toolkit';
 import todosReducer from './slice/todosSlice';
+import messageReducer from './slice/messageSlice';
 
 export const store = configureStore({
   reducer: {
     todos: todosReducer,
+    message: messageReducer, // 新增 message reducer
   },
 });`}</code>
                             </pre>
 
-                            <h5 className="mt-4 mb-3">3. 提供 Store (main.jsx)</h5>
-                            <pre className="bg-light p-4 rounded-3 overflow-auto">
-                                <code>{`import { Provider } from 'react-redux';
-import { store } from './store';
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <Provider store={store}>
-    <App />
-  </Provider>
-);`}</code>
-                            </pre>
-
-                            <h5 className="mt-4 mb-3">4. 在元件中使用</h5>
+                            <h5 className="mt-4 mb-3">3. 在元件中使用</h5>
                             <pre className="bg-light p-4 rounded-3 overflow-auto">
                                 <code>{`import { useSelector, useDispatch } from 'react-redux';
-import { addTodo, toggleTodo, deleteTodo, editTodo } from './slice/todosSlice';
+import { 
+  addMessage, 
+  markAsRead, 
+  markAllAsRead, 
+  deleteMessage 
+} from './slice/messageSlice';
 
-function TodoList() {
-  // 讀取狀態
-  const todos = useSelector((state) => state.todos.items);
-  
-  // 取得 dispatch 函式
+function MessageCenter() {
+  // 讀取狀態（解構多個狀態）
+  const { messages, unreadCount } = useSelector((state) => state.message);
   const dispatch = useDispatch();
   
-  // 新增 Todo
-  const handleAdd = (text) => {
-    dispatch(addTodo(text));
+  // 新增訊息 (使用 Async Thunk 自動刪除)
+  const handleAdd = (text, type) => {
+    dispatch(createAsyncMessage({ text, type }));
   };
   
-  // 切換完成狀態
-  const handleToggle = (id) => {
-    dispatch(toggleTodo(id));
+  // 標記已讀
+  const handleRead = (id) => {
+    dispatch(markAsRead(id));
   };
   
-  // 刪除 Todo
-  const handleDelete = (id) => {
-    dispatch(deleteTodo(id));
-  };
-  
-  // 編輯 Todo
-  const handleEdit = (id, text) => {
-    dispatch(editTodo({ id, text }));
+  // 全部已讀
+  const handleReadAll = () => {
+    dispatch(markAllAsRead());
   };
   
   return (
     <div>
-      {todos.map(todo => (
-        <div key={todo.id}>
-          <span>{todo.text}</span>
-          <button onClick={() => handleToggle(todo.id)}>完成</button>
-          <button onClick={() => handleEdit(todo.id, '新文字')}>編輯</button>
-          <button onClick={() => handleDelete(todo.id)}>刪除</button>
+      <span>未讀: {unreadCount}</span>
+      {messages.map(msg => (
+        <div key={msg.id}>
+          <span>{msg.text}</span>
+          {!msg.read && (
+            <button onClick={() => handleRead(msg.id)}>
+              標記已讀
+            </button>
+          )}
         </div>
       ))}
     </div>
@@ -400,87 +478,73 @@ function TodoList() {
                 </div>
             </div>
 
-            {/* Redux 資料流程 */}
-            <div className="row mb-4">
-                <div className="col-12">
-                    <div className="card border-0 shadow-sm bg-light">
-                        <div className="card-body">
-                            <h3 className="card-title mb-4">
-                                <i className="bi bi-arrow-repeat me-2 text-info"></i>
-                                Redux 資料流程
-                            </h3>
-                            <div className="text-center">
-                                <div className="d-inline-flex flex-column align-items-center">
-                                    <div className="alert alert-primary mb-3 w-100">
-                                        <strong>1. UI 元件</strong><br />
-                                        使用者觸發事件
-                                    </div>
-                                    <i className="bi bi-arrow-down fs-3 text-primary mb-3"></i>
-                                    <div className="alert alert-success mb-3 w-100">
-                                        <strong>2. dispatch(action)</strong><br />
-                                        發送 Action
-                                    </div>
-                                    <i className="bi bi-arrow-down fs-3 text-success mb-3"></i>
-                                    <div className="alert alert-warning mb-3 w-100">
-                                        <strong>3. Reducer</strong><br />
-                                        根據 Action 更新 State
-                                    </div>
-                                    <i className="bi bi-arrow-down fs-3 text-warning mb-3"></i>
-                                    <div className="alert alert-info mb-3 w-100">
-                                        <strong>4. Store</strong><br />
-                                        儲存新的 State
-                                    </div>
-                                    <i className="bi bi-arrow-down fs-3 text-info mb-3"></i>
-                                    <div className="alert alert-secondary mb-0 w-100">
-                                        <strong>5. UI 更新</strong><br />
-                                        React 重新渲染
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* 最佳實踐 */}
+            {/* 重點說明 */}
             <div className="row">
                 <div className="col-12">
                     <div className="card border-0 shadow-sm">
                         <div className="card-body">
                             <h3 className="card-title mb-3">
                                 <i className="bi bi-lightbulb me-2 text-warning"></i>
-                                最佳實踐
+                                重點說明
                             </h3>
                             <div className="row g-3">
                                 <div className="col-md-6">
-                                    <div className="d-flex align-items-start">
-                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                        <div>
-                                            <strong>使用 Redux Toolkit:</strong> 簡化 Redux 配置與使用
+                                    <div className="card h-100 border-primary">
+                                        <div className="card-header bg-primary text-white">
+                                            <i className="bi bi-database me-2"></i>
+                                            多狀態管理
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="mb-0">
+                                                <li>一個 Slice 可以管理多個相關狀態</li>
+                                                <li>使用物件解構取得多個狀態值</li>
+                                                <li>保持狀態之間的同步更新</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
-                                    <div className="d-flex align-items-start">
-                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                        <div>
-                                            <strong>模組化 Slice:</strong> 依功能分割不同的 Slice
+                                    <div className="card h-100 border-success">
+                                        <div className="card-header bg-success text-white">
+                                            <i className="bi bi-arrow-repeat me-2"></i>
+                                            自動計算
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="mb-0">
+                                                <li>unreadCount 自動同步更新</li>
+                                                <li>使用 Math.max() 避免負數</li>
+                                                <li>reducer 內直接操作多個狀態</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
-                                    <div className="d-flex align-items-start">
-                                        <i className="bi bi-check-circle-fill text-success me-2 mt-1"></i>
-                                        <div>
-                                            <strong>避免過度使用:</strong> 不是所有狀態都需要放 Redux
+                                    <div className="card h-100 border-warning">
+                                        <div className="card-header bg-warning">
+                                            <i className="bi bi-box-seam me-2"></i>
+                                            資料結構
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="mb-0">
+                                                <li>每則訊息包含 id, text, type, read, timestamp</li>
+                                                <li>type 用於分類（success/info/warning/error）</li>
+                                                <li>timestamp 記錄建立時間</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
-                                    <div className="d-flex align-items-start">
-                                        <i className="bi bi-x-circle-fill text-danger me-2 mt-1"></i>
-                                        <div>
-                                            <strong>避免:</strong> 直接修改 state，使用 Immer 已內建在 RTK
+                                    <div className="card h-100 border-info">
+                                        <div className="card-header bg-info text-white">
+                                            <i className="bi bi-cpu me-2"></i>
+                                            Reducer 邏輯
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="mb-0">
+                                                <li>markAsRead: 檢查未讀才減少計數</li>
+                                                <li>deleteMessage: 刪除時同步更新計數</li>
+                                                <li>clearAllMessages: 重置所有狀態</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -489,9 +553,6 @@ function TodoList() {
                     </div>
                 </div>
             </div>
-            {/* 訊息通知元件 */}
-            <MessageToast />
         </div>
     );
 }
-
