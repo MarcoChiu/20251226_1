@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { routes } from '../routes';
+import { Loading } from './Loading';
 
 const { VITE_APP_WebSite_Title } = import.meta.env;
+
 
 const Layout = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -71,7 +73,7 @@ const Layout = () => {
 
     // Recursive menu renderer
     const renderMenu = (routes, parentPath = '') => {
-        return routes.filter(r => r.showInMenu).map(route => {
+        return routes.filter(r => r.isShow).map(route => {
             const fullPath = parentPath ? `${parentPath}/${route.path}` : route.path;
             const menuKey = route.title;
             const isExpanded = expandedMenus[menuKey];
@@ -155,11 +157,49 @@ const Layout = () => {
 
                 {/* Content Container */}
                 <div className="mt-4 pb-5">
-                    <Outlet />
+                    <Suspense fallback={<Loading />}>
+                        <Outlet />
+                    </Suspense>
                 </div>
             </div>
         </div>
     );
 };
+
+
+// 遞迴處理路由，為 createHashRouter 格式化
+const formatRoutes = (routes) => {
+    return routes.map((route) => {
+        const formatted = { ...route };
+        if (route.children) {
+            formatted.children = formatRoutes(route.children);
+        }
+        return formatted;
+    });
+};
+
+// 找出第一個導覽路徑
+const getFirstPath = (routes) => {
+    if (!routes || routes.length === 0) return '';
+    const first = routes[0];
+    if (first.children && first.children.length > 0) {
+        return `${first.path}/${getFirstPath(first.children)}`;
+    }
+    return first.path;
+};
+
+export const routerConfig = [
+    {
+        path: '/',
+        element: <Layout />,
+        children: [
+            {
+                index: true,
+                element: <Navigate to={`/${getFirstPath(routes)}`} replace />
+            },
+            ...formatRoutes(routes)
+        ]
+    }
+];
 
 export { Layout };
