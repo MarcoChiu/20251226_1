@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
-import { Loading } from '../../components/Loading';
+import Loading from '../../components/Loading';
 
 const { VITE_APP_Unsplash_AccessKey } = import.meta.env;
 
