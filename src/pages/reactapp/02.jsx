@@ -282,7 +282,7 @@ export default function UseEffectPage() {
                     <div ref={loadingSentinelRef} style={{ height: '20px', margin: '20px 0' }}></div>
 
                     {/* 載入中 */}
-                    {isLoading && <Loading><b>載入中，請稍候...</b></Loading>}
+                    {isLoading && <Loading />}
                 </div>
             </div></div></div></div>
 

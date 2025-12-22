@@ -9,7 +9,7 @@ import {
     logout
 } from '../../slice/productSlice';
 import axios from 'axios';
-import { Loading } from '../../components/Loading';
+import Loading from '../../components/Loading';
 import styles from '../react/06.module.css';
 
 const { VITE_APP_Path06, VITE_APP_Email06, VITE_APP_Password06 } = import.meta.env;

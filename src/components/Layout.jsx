@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Loading } from './Loading';
+import Loading from './Loading';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import GoTop from './GoTop';

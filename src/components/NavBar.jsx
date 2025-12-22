@@ -6,7 +6,7 @@ import { Collapse, Dropdown } from 'bootstrap';
 const NavItem = ({ item, onItemClick }) => {
     const location = useLocation();
     const hasChildren = item.children && item.children.length > 0;
-    const isChildActive = location.pathname.startsWith(item.path);
+    const isChildActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
 
     const toggleDropdown = (e) => {
         e.preventDefault();

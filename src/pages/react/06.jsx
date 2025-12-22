@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import styles from './06.module.css';
-import { Loading } from '../../components/Loading';
+import Loading from '../../components/Loading';
 
 const { VITE_APP_Path06, VITE_APP_Email06, VITE_APP_Password06 } = import.meta.env;
 
@@ -412,7 +412,7 @@ export default function ComponentPage() {
                     />
 
                     {/* Loading */}
-                    {loading && <Loading><b>載入中，請稍候...</b></Loading>}
+                    {loading && <Loading />}
 
                     {/* Error */}
                     {error && <ErrorAlert error={error} />}
@@ -439,7 +439,7 @@ export default function ComponentPage() {
                                 <i className="bi bi-code-slash me-2 text-primary"></i>
                                 程式碼範例
                             </h3>
-                            
+
                             <div className="mb-4">
                                 <h5 className="mb-3">1. Axios 基本請求</h5>
                                 <pre className="bg-dark text-light p-3 rounded">

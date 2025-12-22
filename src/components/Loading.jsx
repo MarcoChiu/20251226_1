@@ -1,10 +1,19 @@
-import styles from './Loading.module.css';
+import React from 'react';
+import './Loading.css';
 
-export const Loading = ({ children }) => {
+const Loading = () => {
     return (
-        <div className={styles.loading}>
-            <div className={styles.spinner}></div>
-            <p>{children}</p>
+        <div className="loading-container">
+            <div className="loading-content">
+                <div className="spinner">
+                    <div className="spinner-ring"></div>
+                    <div className="spinner-ring"></div>
+                    <div className="spinner-ring"></div>
+                </div>
+                <p className="loading-text">Loading...</p>
+            </div>
         </div>
     );
 };
+
+export default Loading;
