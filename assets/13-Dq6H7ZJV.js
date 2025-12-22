@@ -1,0 +1,30 @@
+import{r as i,j as s}from"./index-BgoDCxlK.js";const c=i.forwardRef((e,l)=>s.jsx("button",{ref:l,className:"btn btn-outline-primary btn-lg rounded-pill shadow-sm",...e,children:e.children}));c.displayName="FancyButton";const a=()=>{const e=i.useRef(null),l=()=>{e.current&&(console.log("Button clicked programmatically!"),e.current.style.backgroundColor,e.current.innerText,e.current.classList.remove("btn-outline-primary"),e.current.classList.add("btn-success"),e.current.innerText="已點擊!",setTimeout(()=>{e.current.classList.remove("btn-success"),e.current.classList.add("btn-outline-primary"),e.current.innerText="點我 (Forward Ref)"},1e3))};return s.jsxs("div",{className:"container py-5",children:[s.jsxs("div",{className:"text-center mb-5 p-5 rounded-4 text-white position-relative overflow-hidden",style:{background:"linear-gradient(135deg, #667eea 0%, #764ba2 100%)",boxShadow:"0 10px 40px rgba(102, 126, 234, 0.3)"},children:[s.jsxs("div",{className:"position-relative",style:{zIndex:1},children:[s.jsxs("h1",{className:"display-4 fw-bold mb-3",children:[s.jsx("i",{className:"bi bi-forward-fill me-3"}),"forwardRef"]}),s.jsx("p",{className:"lead mb-0",children:"Ref 轉發 - 允許組件接收 ref"})]}),s.jsx("div",{className:"position-absolute top-0 start-0 w-100 h-100",style:{background:"radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)",zIndex:0}})]}),s.jsx("div",{className:"row mb-5",children:s.jsx("div",{className:"col-12",children:s.jsx("div",{className:"card border-0 shadow-sm",children:s.jsxs("div",{className:"card-body p-4",children:[s.jsxs("h2",{className:"h4 mb-4",children:[s.jsx("i",{className:"bi bi-info-circle me-2 text-primary"}),"Hook 說明"]}),s.jsxs("div",{className:"row g-4",children:[s.jsx("div",{className:"col-md-6",children:s.jsxs("div",{className:"d-flex align-items-start",children:[s.jsx("div",{className:"flex-shrink-0",children:s.jsx("div",{className:"bg-primary bg-opacity-10 rounded-circle p-3",children:s.jsx("i",{className:"bi bi-check2-circle text-primary fs-4"})})}),s.jsxs("div",{className:"flex-grow-1 ms-3",children:[s.jsx("h5",{className:"mb-2",children:"主要用途"}),s.jsxs("ul",{className:"text-muted mb-0",children:[s.jsx("li",{children:"允許組件接收並轉發 ref"}),s.jsx("li",{children:"將 ref 傳遞給子組件"}),s.jsx("li",{children:"封裝可重用組件庫時必要"}),s.jsx("li",{children:"使父組件能訪問子組件的 DOM"})]})]})]})}),s.jsx("div",{className:"col-md-6",children:s.jsxs("div",{className:"d-flex align-items-start",children:[s.jsx("div",{className:"flex-shrink-0",children:s.jsx("div",{className:"bg-warning bg-opacity-10 rounded-circle p-3",children:s.jsx("i",{className:"bi bi-exclamation-triangle text-warning fs-4"})})}),s.jsxs("div",{className:"flex-grow-1 ms-3",children:[s.jsx("h5",{className:"mb-2",children:"注意事項"}),s.jsxs("ul",{className:"text-muted mb-0",children:[s.jsx("li",{children:"函式組件預設不能接收 ref"}),s.jsx("li",{children:"必須使用 forwardRef 包裝"}),s.jsx("li",{children:"主要用於可重用 UI 庫"}),s.jsx("li",{children:"搭配 useImperativeHandle 更佳"})]})]})]})})]})]})})})}),s.jsx("div",{className:"row mb-4",children:s.jsx("div",{className:"col-12",children:s.jsx("div",{className:"card border-0 shadow-sm",children:s.jsxs("div",{className:"card-body",children:[s.jsxs("h3",{className:"card-title mb-3",children:[s.jsx("i",{className:"bi bi-play-circle me-2"}),"互動範例"]}),s.jsxs("div",{className:"bg-light p-4 rounded-3 text-center",children:[s.jsx("p",{className:"mb-4",children:"父組件持有 ref，可以直接操作下方的自定義按鈕 DOM"}),s.jsx(c,{ref:e,onClick:()=>alert("Button Clicked!"),children:"點我 (Forward Ref)"}),s.jsx("div",{className:"mt-4 pt-3 border-top",children:s.jsx("button",{onClick:l,className:"btn btn-link link-secondary text-decoration-none",children:"父組件觸發按鈕改變 (透過 ref)"})})]})]})})})}),s.jsx("div",{className:"row mb-4",children:s.jsx("div",{className:"col-12",children:s.jsx("div",{className:"card border-0 shadow-sm",children:s.jsxs("div",{className:"card-body",children:[s.jsxs("h3",{className:"card-title mb-3",children:[s.jsx("i",{className:"bi bi-code-slash me-2"}),"程式碼範例"]}),s.jsx("pre",{className:"bg-light p-4 rounded-3 overflow-auto",children:s.jsx("code",{children:`import { forwardRef, useRef } from 'react';
+
+// 使用 forwardRef 包裝組件
+const FancyButton = forwardRef((props, ref) => (
+  <button 
+    ref={ref}
+    className="fancy-button"
+    {...props}
+  >
+    {props.children}
+  </button>
+));
+
+// 父組件使用
+function Parent() {
+  const buttonRef = useRef(null);
+  
+  const handleClick = () => {
+    buttonRef.current.focus();
+  };
+  
+  return (
+    <>
+      <FancyButton ref={buttonRef}>
+        Click me
+      </FancyButton>
+      <button onClick={handleClick}>Focus Button</button>
+    </>
+  );
+}`})})]})})})}),s.jsx("div",{className:"row",children:s.jsx("div",{className:"col-12",children:s.jsx("div",{className:"card border-0 shadow-sm bg-light",children:s.jsxs("div",{className:"card-body",children:[s.jsxs("h3",{className:"card-title mb-3",children:[s.jsx("i",{className:"bi bi-lightbulb me-2 text-warning"}),"最佳實踐"]}),s.jsxs("div",{className:"row g-3",children:[s.jsx("div",{className:"col-md-6",children:s.jsxs("div",{className:"d-flex align-items-start",children:[s.jsx("i",{className:"bi bi-check-circle-fill text-success me-2 mt-1"}),s.jsxs("div",{children:[s.jsx("strong",{children:"適用場景:"})," UI 組件庫(Button, Input)"]})]})}),s.jsx("div",{className:"col-md-6",children:s.jsxs("div",{className:"d-flex align-items-start",children:[s.jsx("i",{className:"bi bi-check-circle-fill text-success me-2 mt-1"}),s.jsxs("div",{children:[s.jsx("strong",{children:"焦點管理:"})," 讓使用者控制焦點"]})]})}),s.jsx("div",{className:"col-md-6",children:s.jsxs("div",{className:"d-flex align-items-start",children:[s.jsx("i",{className:"bi bi-check-circle-fill text-success me-2 mt-1"}),s.jsxs("div",{children:[s.jsx("strong",{children:"測量位置:"})," 獲取 DOM 節點進行計算"]})]})}),s.jsx("div",{className:"col-md-6",children:s.jsxs("div",{className:"d-flex align-items-start",children:[s.jsx("i",{className:"bi bi-x-circle-fill text-danger me-2 mt-1"}),s.jsxs("div",{children:[s.jsx("strong",{children:"避免:"})," 過度暴露內部 DOM 結構"]})]})})]})]})})})})]})};export{a as default};
