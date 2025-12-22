@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import Layout from './components/Layout';
 
 // React Pages
 const BasicAiPage = lazy(() => import('./pages/react/01.jsx'));
@@ -71,108 +72,116 @@ const UseReducerPage = lazy(() => import('./pages/reactapp/08.jsx'));
 
 
 export const routes = [
+
     {
-        path: 'react',
-        title: 'React',
-        isShow: true,
+        path: '/',
+        element: <Layout />,
         children: [
-            { path: '01', element: <BasicAiPage />, title: '01.Basic', isShow: true },
-            { path: '02', element: <JsxAiPage />, title: '02.JSX', isShow: true },
-            { path: '03', element: <RenderSingleAiPage />, title: '03.Single Render', isShow: true },
-            { path: '04', element: <RenderMultipleAiPage />, title: '04.Multiple Render', isShow: true },
-            { path: '05', element: <EsModuleAiPage />, title: '05.ES Modules', isShow: true },
-            { path: '06', element: <ComponentAiPage />, title: '06.Component', isShow: true },
-            { path: '07', element: <ReactMemoAiPage />, title: '07.React.memo', isShow: true },
-        ]
-    },
-    {
-        path: 'reactform',
-        title: 'React Form',
-        isShow: true,
-        children: [
-            { path: '01', element: <InputPage />, title: '01.Input', isShow: true },
-            { path: '02', element: <SelectPage />, title: '02.Select', isShow: true },
-            { path: '03', element: <CheckboxPage />, title: '03.Checkbox', isShow: true },
-            { path: '04', element: <RadioPage />, title: '04.Radio', isShow: true },
-            { path: '05', element: <FilePage />, title: '05.File', isShow: true },
-            { path: '06', element: <TextareaPage />, title: '06.Textarea', isShow: true },
-            { path: '07', element: <KeyboardEventPage />, title: '07.Keyboard Event', isShow: true },
-            { path: '08', element: <DynamicFormPage />, title: '08.Dynamic Form', isShow: true },
-            { path: '09', element: <ValidationPage />, title: '09.Validation', isShow: true },
-            { path: '10', element: <UncontrolledPage />, title: '10.Uncontrolled', isShow: true },
-            { path: '11', element: <WizardFormPage />, title: '11.Wizard Form', isShow: true },
-            { path: '12', element: <DebouncePage />, title: '12.Debounce', isShow: true },
-        ]
-    },
-    {
-        path: 'reacthook',
-        title: 'React Hook',
-        isShow: true,
-        children: [
-            { path: '01', element: <UseStateAiPage />, title: '01.useState', isShow: true },
-            { path: '02', element: <UseEffectAiPage />, title: '02.useEffect', isShow: true },
-            { path: '03', element: <UseRefAiPage />, title: '03.useRef', isShow: true },
-            { path: '04', element: <UseMemoAiPage />, title: '04.useMemo', isShow: true },
-            { path: '05', element: <UseCallbackAiPage />, title: '05.useCallback', isShow: true },
-            { path: '06', element: <UseContextAiPage />, title: '06.useContext', isShow: true },
-            { path: '07', element: <UseTransitionAiPage />, title: '07.useTransition', isShow: true },
-            { path: '08', element: <UseLayoutEffectAiPage />, title: '08.useLayoutEffect', isShow: true },
-            { path: '09', element: <UseReducerAiPage />, title: '09.useReducer', isShow: true },
-            { path: '10', element: <UseDeferredValueAiPage />, title: '10.useDeferredValue', isShow: true },
-            { path: '11', element: <UseInsertionEffectAiPage />, title: '11.useInsertionEffect', isShow: true },
-            { path: '12', element: <UseImperativeHandleAiPage />, title: '12.useImperativeHandle', isShow: true },
-            { path: '13', element: <ForwardRefAiPage />, title: '13.forwardRef', isShow: true },
-            { path: '14', element: <UseOptimisticAiPage />, title: '14.useOptimistic', isShow: true },
-            { path: '15', element: <UseFormStatusAiPage />, title: '15.useFormStatus', isShow: true },
-            { path: '16', element: <UseActionStateAiPage />, title: '16.useActionState', isShow: true },
-            { path: '17', element: <UseIdAiPage />, title: '17.useId', isShow: true },
-            { path: '18', element: <UseSyncExternalStoreAiPage />, title: '18.useSyncExternalStore', isShow: true },
-            { path: '19', element: <UseDebugValueAiPage />, title: '19.useDebugValue', isShow: true },
-        ]
-    },
-    {
-        path: 'reacthookform',
-        title: 'React Hook Form',
-        isShow: true,
-        children: [
-            { path: '01', element: <ReactHookFormAiPage />, title: '01.Basic', isShow: true },
-        ]
-    },
-    {
-        path: 'reactrouterdom',
-        title: 'React Router Dom',
-        isShow: true,
-        children: [
-            { path: '01', element: <BasicRoutingPage />, title: '01.Basic Routing', isShow: true },
-            { path: '02', element: <AdvancedRoutingPage />, title: '02.useNavigate & useLocation', isShow: true },
-            { path: '03', element: <DynamicRoutingPage />, title: '03.Dynamic Routing', isShow: true },
-            { path: '04', element: <NestedRoutingPage />, title: '04.Nested Routing', isShow: true },
-            { path: '05/*', element: <NestedRoutingDemoPage />, title: '05.Nested Demo', isShow: true },
-        ]
-    },
-    {
-        path: 'reactredux',
-        title: 'React Redux',
-        isShow: true,
-        children: [
-            { path: '01', element: <ReduxTodoListPage />, title: '01.Redux Todo List', isShow: true },
-            { path: '02', element: <ReduxMessagePage />, title: '02.Redux Message', isShow: true },
-            { path: '03', element: <ReduxBasicPage />, title: '03.Redux Async Product', isShow: true },
-        ]
-    },
-    {
-        path: 'reactapp',
-        title: 'React App',
-        isShow: true,
-        children: [
-            { path: '01', element: <UseStatePage />, title: '01.useState', isShow: true },
-            { path: '02', element: <UseEffectPage />, title: '02.useEffect', isShow: true },
-            { path: '03', element: <UseRefPage />, title: '03.useRef', isShow: true },
-            { path: '04', element: <UseMemoPage />, title: '04.useMemo', isShow: true },
-            { path: '05', element: <UseCallbackPage />, title: '05.useCallback', isShow: true },
-            { path: '06', element: <UseDebugValuePage />, title: '06.useDebugValue', isShow: true },
-            { path: '07', element: <UseContextPage />, title: '07.useContext', isShow: true },
-            { path: '08', element: <UseReducerPage />, title: '08.useReducer', isShow: true },
-        ]
+
+
+            {
+                path: 'react',
+                title: 'React',
+                isShow: true,
+                children: [
+                    { path: '01', element: <BasicAiPage />, title: '01.Basic', isShow: true },
+                    { path: '02', element: <JsxAiPage />, title: '02.JSX', isShow: true },
+                    { path: '03', element: <RenderSingleAiPage />, title: '03.Single Render', isShow: true },
+                    { path: '04', element: <RenderMultipleAiPage />, title: '04.Multiple Render', isShow: true },
+                    { path: '05', element: <EsModuleAiPage />, title: '05.ES Modules', isShow: true },
+                    { path: '06', element: <ComponentAiPage />, title: '06.Component', isShow: true },
+                    { path: '07', element: <ReactMemoAiPage />, title: '07.React.memo', isShow: true },
+                ]
+            },
+            {
+                path: 'reactform',
+                title: 'React Form',
+                isShow: true,
+                children: [
+                    { path: '01', element: <InputPage />, title: '01.Input', isShow: true },
+                    { path: '02', element: <SelectPage />, title: '02.Select', isShow: true },
+                    { path: '03', element: <CheckboxPage />, title: '03.Checkbox', isShow: true },
+                    { path: '04', element: <RadioPage />, title: '04.Radio', isShow: true },
+                    { path: '05', element: <FilePage />, title: '05.File', isShow: true },
+                    { path: '06', element: <TextareaPage />, title: '06.Textarea', isShow: true },
+                    { path: '07', element: <KeyboardEventPage />, title: '07.Keyboard Event', isShow: true },
+                    { path: '08', element: <DynamicFormPage />, title: '08.Dynamic Form', isShow: true },
+                    { path: '09', element: <ValidationPage />, title: '09.Validation', isShow: true },
+                    { path: '10', element: <UncontrolledPage />, title: '10.Uncontrolled', isShow: true },
+                    { path: '11', element: <WizardFormPage />, title: '11.Wizard Form', isShow: true },
+                    { path: '12', element: <DebouncePage />, title: '12.Debounce', isShow: true },
+                ]
+            },
+            {
+                path: 'reacthook',
+                title: 'React Hook',
+                isShow: true,
+                children: [
+                    { path: '01', element: <UseStateAiPage />, title: '01.useState', isShow: true },
+                    { path: '02', element: <UseEffectAiPage />, title: '02.useEffect', isShow: true },
+                    { path: '03', element: <UseRefAiPage />, title: '03.useRef', isShow: true },
+                    { path: '04', element: <UseMemoAiPage />, title: '04.useMemo', isShow: true },
+                    { path: '05', element: <UseCallbackAiPage />, title: '05.useCallback', isShow: true },
+                    { path: '06', element: <UseContextAiPage />, title: '06.useContext', isShow: true },
+                    { path: '07', element: <UseTransitionAiPage />, title: '07.useTransition', isShow: true },
+                    { path: '08', element: <UseLayoutEffectAiPage />, title: '08.useLayoutEffect', isShow: true },
+                    { path: '09', element: <UseReducerAiPage />, title: '09.useReducer', isShow: true },
+                    { path: '10', element: <UseDeferredValueAiPage />, title: '10.useDeferredValue', isShow: true },
+                    { path: '11', element: <UseInsertionEffectAiPage />, title: '11.useInsertionEffect', isShow: true },
+                    { path: '12', element: <UseImperativeHandleAiPage />, title: '12.useImperativeHandle', isShow: true },
+                    { path: '13', element: <ForwardRefAiPage />, title: '13.forwardRef', isShow: true },
+                    { path: '14', element: <UseOptimisticAiPage />, title: '14.useOptimistic', isShow: true },
+                    { path: '15', element: <UseFormStatusAiPage />, title: '15.useFormStatus', isShow: true },
+                    { path: '16', element: <UseActionStateAiPage />, title: '16.useActionState', isShow: true },
+                    { path: '17', element: <UseIdAiPage />, title: '17.useId', isShow: true },
+                    { path: '18', element: <UseSyncExternalStoreAiPage />, title: '18.useSyncExternalStore', isShow: true },
+                    { path: '19', element: <UseDebugValueAiPage />, title: '19.useDebugValue', isShow: true },
+                ]
+            },
+            {
+                path: 'reacthookform',
+                title: 'React Hook Form',
+                isShow: true,
+                children: [
+                    { path: '01', element: <ReactHookFormAiPage />, title: '01.Basic', isShow: true },
+                ]
+            },
+            {
+                path: 'reactrouterdom',
+                title: 'React Router Dom',
+                isShow: true,
+                children: [
+                    { path: '01', element: <BasicRoutingPage />, title: '01.Basic Routing', isShow: true },
+                    { path: '02', element: <AdvancedRoutingPage />, title: '02.useNavigate & useLocation', isShow: true },
+                    { path: '03', element: <DynamicRoutingPage />, title: '03.Dynamic Routing', isShow: true },
+                    { path: '04', element: <NestedRoutingPage />, title: '04.Nested Routing', isShow: true },
+                    { path: '05/*', element: <NestedRoutingDemoPage />, title: '05.Nested Demo', isShow: true },
+                ]
+            },
+            {
+                path: 'reactredux',
+                title: 'React Redux',
+                isShow: true,
+                children: [
+                    { path: '01', element: <ReduxTodoListPage />, title: '01.Redux Todo List', isShow: true },
+                    { path: '02', element: <ReduxMessagePage />, title: '02.Redux Message', isShow: true },
+                    { path: '03', element: <ReduxBasicPage />, title: '03.Redux Async Product', isShow: true },
+                ]
+            },
+            {
+                path: 'reactapp',
+                title: 'React App',
+                isShow: true,
+                children: [
+                    { path: '01', element: <UseStatePage />, title: '01.useState', isShow: true },
+                    { path: '02', element: <UseEffectPage />, title: '02.useEffect', isShow: true },
+                    { path: '03', element: <UseRefPage />, title: '03.useRef', isShow: true },
+                    { path: '04', element: <UseMemoPage />, title: '04.useMemo', isShow: true },
+                    { path: '05', element: <UseCallbackPage />, title: '05.useCallback', isShow: true },
+                    { path: '06', element: <UseDebugValuePage />, title: '06.useDebugValue', isShow: true },
+                    { path: '07', element: <UseContextPage />, title: '07.useContext', isShow: true },
+                    { path: '08', element: <UseReducerPage />, title: '08.useReducer', isShow: true },
+                ]
+            }]
     }
 ];

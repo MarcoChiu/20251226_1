@@ -1,11 +1,9 @@
 import { RouterProvider, createHashRouter } from 'react-router-dom';
-import { routerConfig } from './components/Layout';
-import './App.css';
+import { routes } from './routes';
 
-export const App = () => {
+const App = () => {
   return (
-    <RouterProvider router={createHashRouter(routerConfig)} />
+    <RouterProvider router={createHashRouter(routes)} />
   )
 }
-
 export default App;
